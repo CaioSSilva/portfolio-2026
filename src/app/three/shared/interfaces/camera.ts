@@ -1,0 +1,1 @@
+export type CameraState = 'IDLE' | 'PENDULUM' | 'TRANSITIONING' | 'FOCUSED';
