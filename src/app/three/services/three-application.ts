@@ -23,10 +23,11 @@ export class ThreeApplication {
       alpha: true,
       powerPreference: 'high-performance',
     });
+
     this.webGLRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
     this.webGLRenderer.shadowMap.enabled = true;
-    this.webGLRenderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.webGLRenderer.shadowMap.type = THREE.PCFShadowMap;
     this.webGLRenderer.toneMapping = THREE.ACESFilmicToneMapping;
 
     this.cssRenderer = new CSS3DRenderer();

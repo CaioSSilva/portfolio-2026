@@ -13,24 +13,26 @@ export class CameraAnimations {
   private currentScreenElement?: HTMLElement;
 
   public state: CameraState = 'IDLE';
-  private timer = new THREE.Timer();
   private baseCameraPos = new THREE.Vector3();
   private baseTargetPos = new THREE.Vector3();
   private hoverExitTimeout: number | null = null;
   private readonly HOVER_EXIT_DELAY = 800;
 
-  public initPendulum(cameraPos: THREE.Vector3, targetPos: THREE.Vector3): void {
+  public initIdle(cameraPos: THREE.Vector3, targetPos: THREE.Vector3): void {
     this.baseCameraPos.copy(cameraPos);
     this.baseTargetPos.copy(targetPos);
-    this.startPendulum();
+    this.startIdle();
   }
 
-  public startPendulum(): void {
-    this.state = 'PENDULUM';
+  public startIdle(): void {
+    this.state = 'IDLE';
     if (this.threeApp.controls) {
       this.threeApp.controls.enabled = false;
+      this.threeApp.controls.target.copy(this.baseTargetPos);
+      this.threeApp.controls.update();
     }
-    this.timer.reset();
+    this.threeApp.camera.position.copy(this.baseCameraPos);
+    this.threeApp.camera.lookAt(this.baseTargetPos);
   }
 
   public focusOnObject(
@@ -125,14 +127,8 @@ export class CameraAnimations {
   }
 
   public update(): void {
-    if (this.state === 'PENDULUM') {
-      this.timer.update();
-      const time = this.timer.getElapsed();
-
-      const amplitudeX = 2;
-      const speed = 0.3;
-
-      this.threeApp.camera.position.x = this.baseCameraPos.x + Math.sin(time * speed) * amplitudeX;
+    if (this.state === 'IDLE') {
+      this.threeApp.camera.position.copy(this.baseCameraPos);
       this.threeApp.camera.lookAt(this.baseTargetPos);
     }
   }
@@ -142,7 +138,7 @@ export class CameraAnimations {
     if (this.hoverExitTimeout !== null) return;
     this.hoverExitTimeout = window.setTimeout(() => {
       this.hoverExitTimeout = null;
-      this.returnToPendulum();
+      this.returnToIdle();
     }, this.HOVER_EXIT_DELAY);
   };
 
@@ -168,7 +164,7 @@ export class CameraAnimations {
     }
   }
 
-  public returnToPendulum(): void {
+  public returnToIdle(): void {
     if (this.state !== 'FOCUSED') return;
     this.state = 'TRANSITIONING';
 
@@ -206,7 +202,7 @@ export class CameraAnimations {
             this.detachScreenHoverGuard(this.currentScreenElement);
             this.currentScreenElement = undefined;
           }
-          this.startPendulum();
+          this.startIdle();
 
           this.interactiveService.enabled = true;
         },

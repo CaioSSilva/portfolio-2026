@@ -62,7 +62,7 @@ export class Three implements AfterViewInit {
 
     this.threeApp.camera.position.copy(posInicialCamera);
 
-    this.cameraAnimations.initPendulum(posInicialCamera, centroDoQuarto);
+    this.cameraAnimations.initIdle(posInicialCamera, centroDoQuarto);
 
     const monitorTelaMesh = bakedScene.getObjectByName('Monitor_Tela') as THREE.Mesh;
     const monitorMesh = bakedScene.getObjectByName('Monitor') as THREE.Mesh;
@@ -83,19 +83,17 @@ export class Three implements AfterViewInit {
       this.threeApp.scene.add(ghostPlane);
 
       this.interactiveService.onObjectClick((clickedObject) => {
-        if (this.cameraAnimations.state === 'PENDULUM') {
+        if (this.cameraAnimations.state === 'IDLE') {
           this.interactiveService.enabled = false;
           this.cameraAnimations.focusOnObject(
             clickedObject,
             1.5,
-            () => console.log('Zoom finalizado!'),
+            () => {},
             monitorTelaMesh,
             screenElement,
           );
         }
       });
-    } else {
-      console.warn('Mesh "Monitor_Tela" não encontrado no glTF.');
     }
 
     if (monitorMesh) {
