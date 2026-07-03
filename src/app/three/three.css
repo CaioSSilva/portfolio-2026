@@ -3,11 +3,7 @@
   height: 100vh;
   overflow: hidden;
   position: relative;
-  background-color: #ccccd6;
-}
-
-.scene-wrapper.dark {
-  background-color: #15151e;
+  background-color: #15151e
 }
 
 .css-container {
@@ -42,7 +38,7 @@
 
 .top-bar {
   padding: 5px;
-  background-color: #f3f3f38b;
+  background-color: #7272728b;
   border-radius: 10px;
   display: flex;
   gap: 5px;

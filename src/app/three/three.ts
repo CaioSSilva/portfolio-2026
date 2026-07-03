@@ -14,9 +14,8 @@ import {
   heroSpeakerWave,
   heroSpeakerXMark,
   heroQuestionMarkCircle,
+  heroLightBulb,
 } from '@ng-icons/heroicons/outline';
-import { Theme } from './services/theme';
-import { ThemeEnum } from './shared/interfaces/theme';
 
 @Component({
   selector: 'app-three',
@@ -25,7 +24,7 @@ import { ThemeEnum } from './shared/interfaces/theme';
   styleUrls: ['./three.css'],
   imports: [NgIcon],
   providers: [
-    provideIcons({ heroSun, heroMoon, heroSpeakerWave, heroSpeakerXMark, heroQuestionMarkCircle }),
+    provideIcons({ heroLightBulb, heroSpeakerWave, heroSpeakerXMark, heroQuestionMarkCircle }),
   ],
 })
 export class Three implements AfterViewInit {
@@ -35,8 +34,6 @@ export class Three implements AfterViewInit {
   private destroyRef = inject(DestroyRef);
   private interactiveService = inject(InteractiveObjects);
   private cameraAnimations = inject(CameraAnimations);
-  readonly theme = inject(Theme);
-  readonly themeEnum = ThemeEnum
   private resizeListener!: () => void;
 
   constructor(
