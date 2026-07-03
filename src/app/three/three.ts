@@ -8,7 +8,15 @@ import { applyBakedTexture } from './shared/utils/baked-model';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { InteractiveObjects } from './services/interactive-objects';
 import { CameraAnimations } from './services/camera-animations';
-import { heroSun } from '@ng-icons/heroicons/outline';
+import {
+  heroSun,
+  heroMoon,
+  heroSpeakerWave,
+  heroSpeakerXMark,
+  heroQuestionMarkCircle,
+} from '@ng-icons/heroicons/outline';
+import { Theme } from './services/theme';
+import { ThemeEnum } from './shared/interfaces/theme';
 
 @Component({
   selector: 'app-three',
@@ -16,7 +24,9 @@ import { heroSun } from '@ng-icons/heroicons/outline';
   templateUrl: './three.html',
   styleUrls: ['./three.css'],
   imports: [NgIcon],
-  providers: [provideIcons({ heroSun })],
+  providers: [
+    provideIcons({ heroSun, heroMoon, heroSpeakerWave, heroSpeakerXMark, heroQuestionMarkCircle }),
+  ],
 })
 export class Three implements AfterViewInit {
   @ViewChild('webglContainer', { static: true }) webglContainer!: ElementRef<HTMLDivElement>;
@@ -25,6 +35,8 @@ export class Three implements AfterViewInit {
   private destroyRef = inject(DestroyRef);
   private interactiveService = inject(InteractiveObjects);
   private cameraAnimations = inject(CameraAnimations);
+  readonly theme = inject(Theme);
+  readonly themeEnum = ThemeEnum
   private resizeListener!: () => void;
 
   constructor(

@@ -3,6 +3,10 @@
   height: 100vh;
   overflow: hidden;
   position: relative;
+  background-color: #ccccd6;
+}
+
+.scene-wrapper.dark {
   background-color: #15151e;
 }
 
@@ -34,4 +38,26 @@
   flex: 1;
   position: fixed;
   z-index: 2;
+}
+
+.top-bar {
+  padding: 5px;
+  background-color: #f3f3f38b;
+  border-radius: 10px;
+  display: flex;
+  gap: 5px;
+}
+
+.top-bar button {
+  transition: 0.3;
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  background-color: #f3f3f3;
+  border: 1.5px solid #15151e;
+}
+
+.top-bar button:hover {
+  cursor: pointer;
+  background-color: #e0e0e0;
 }
