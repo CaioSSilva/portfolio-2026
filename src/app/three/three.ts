@@ -5,15 +5,18 @@ import { RenderLoop } from './services/render-loop';
 import { Resources } from './services/resources';
 import { MonitorScreen } from './services/monitor-screen';
 import { applyBakedTexture } from './shared/utils/baked-model';
-
+import { NgIcon, provideIcons } from '@ng-icons/core';
 import { InteractiveObjects } from './services/interactive-objects';
 import { CameraAnimations } from './services/camera-animations';
+import { heroSun } from '@ng-icons/heroicons/outline';
 
 @Component({
   selector: 'app-three',
   standalone: true,
   templateUrl: './three.html',
   styleUrls: ['./three.css'],
+  imports: [NgIcon],
+  providers: [provideIcons({ heroSun })],
 })
 export class Three implements AfterViewInit {
   @ViewChild('webglContainer', { static: true }) webglContainer!: ElementRef<HTMLDivElement>;
