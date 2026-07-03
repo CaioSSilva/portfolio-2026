@@ -70,7 +70,7 @@ export class Three implements AfterViewInit {
     if (monitorTelaMesh) {
       const { cssObject, ghostPlane } = this.monitorScreen.setupMonitorScreen(
         monitorTelaMesh,
-        'https://zorin.com',
+        'https://caiossilva.com',
       );
 
       const screenElement = cssObject.element as HTMLElement;
