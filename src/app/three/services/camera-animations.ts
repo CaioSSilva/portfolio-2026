@@ -13,7 +13,7 @@ export class CameraAnimations {
   private currentScreenElement?: HTMLElement;
 
   public state: CameraState = 'IDLE';
-  private clock = new THREE.Clock();
+  private timer = new THREE.Timer();
   private baseCameraPos = new THREE.Vector3();
   private baseTargetPos = new THREE.Vector3();
   private hoverExitTimeout: number | null = null;
@@ -30,7 +30,7 @@ export class CameraAnimations {
     if (this.threeApp.controls) {
       this.threeApp.controls.enabled = false;
     }
-    this.clock.start();
+    this.timer.reset();
   }
 
   public focusOnObject(
@@ -126,7 +126,9 @@ export class CameraAnimations {
 
   public update(): void {
     if (this.state === 'PENDULUM') {
-      const time = this.clock.getElapsedTime();
+      this.timer.update();
+      const time = this.timer.getElapsed();
+
       const amplitudeX = 2;
       const speed = 0.3;
 

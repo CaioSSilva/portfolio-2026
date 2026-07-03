@@ -18,7 +18,11 @@ export class ThreeApplication {
   constructor() {
     this.scene.background = null;
 
-    this.webGLRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    this.webGLRenderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true,
+      powerPreference: 'high-performance',
+    });
     this.webGLRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
     this.webGLRenderer.shadowMap.enabled = true;
