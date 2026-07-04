@@ -18,6 +18,7 @@ import {
   heroVideoCameraSlash,
 } from '@ng-icons/heroicons/outline';
 import { Loading } from "../loading/loading";
+import { BootSequence } from './services/boot-sequence';
 
 @Component({
   selector: 'app-three',
@@ -45,6 +46,7 @@ export class Three implements AfterViewInit {
   private destroyRef = inject(DestroyRef);
   private interactiveService = inject(InteractiveObjects);
   public cameraAnimations = inject(CameraAnimations);
+  private bootSequence = inject(BootSequence);
   private resizeListener!: () => void;
 
   constructor(
@@ -55,27 +57,37 @@ export class Three implements AfterViewInit {
   ) {}
 
   async ngAfterViewInit() {
+    this.bootSequence.start('renderers');
     this.threeApp.initRenderers(this.webglContainer, this.cssContainer);
     this.interactiveService.init(this.threeApp.scene, this.threeApp.camera);
+    this.bootSequence.complete('renderers');
+
     const modalName = 'room.glb';
     const modelTextureName = 'room.jpg';
 
     this.resizeListener = () => this.threeApp.resize();
     window.addEventListener('resize', this.resizeListener);
 
+    this.bootSequence.start('model');
     const [modelData, texture] = await Promise.all([
       this.resources.loadModel(modalName),
       null,
     ]);
+    this.bootSequence.complete('model');
 
+    this.bootSequence.start('texture');
     const bakedScene = applyBakedTexture(modelData.scene, texture, 1);
     modelData.scene.position.y = -1.5;
     this.threeApp.scene.add(bakedScene);
+    this.bootSequence.complete('texture');
 
+    this.bootSequence.start('bounds');
     const roomBox = new THREE.Box3().setFromObject(bakedScene);
     const centroDoQuarto = new THREE.Vector3();
     roomBox.getCenter(centroDoQuarto);
+    this.bootSequence.complete('bounds');
 
+    this.bootSequence.start('camera');
     const posInicialCamera = new THREE.Vector3(
       centroDoQuarto.x + 5,
       centroDoQuarto.y + 2,
@@ -85,10 +97,12 @@ export class Three implements AfterViewInit {
     this.threeApp.camera.position.copy(posInicialCamera);
 
     this.cameraAnimations.initIdle(posInicialCamera, centroDoQuarto);
+    this.bootSequence.complete('camera');
 
     const monitorTelaMesh = bakedScene.getObjectByName('Monitor_Tela') as THREE.Mesh;
     const monitorMesh = bakedScene.getObjectByName('Monitor') as THREE.Mesh;
 
+    this.bootSequence.start('monitor');
     if (monitorTelaMesh) {
       const { cssObject, ghostPlane } = this.monitorScreen.setupMonitorScreen(
         monitorTelaMesh,
@@ -141,12 +155,17 @@ export class Three implements AfterViewInit {
         }
       });
     }
+    this.bootSequence.complete('monitor');
 
-        if (monitorMesh) {
+    this.bootSequence.start('interactive');
+    if (monitorMesh) {
       this.interactiveService.addObject(monitorMesh);
     }
+    this.bootSequence.complete('interactive');
 
+    this.bootSequence.start('render-loop');
     this.renderLoop.start();
+    this.bootSequence.complete('render-loop');
     this.threeApp.sceneReady.set(true);
 
     this.destroyRef.onDestroy(() => {

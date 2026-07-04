@@ -6,14 +6,118 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  background: #0a0a0a;
+  gap: 20px;
+  background-color: #15151e;
+}
+
+.cube {
+  width: 90px;
+  height: 90px;
+  overflow: visible;
+}
+
+.cube-face-base {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 1;
+}
+
+.cube-face-trace {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.35));
+}
+
+.terminal {
+  width: 320px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.02);
+  overflow: hidden;
+}
+
+.terminal-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.terminal-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.terminal-title {
+  margin-left: 6px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.05em;
+}
+
+.terminal-body {
+  padding: 10px 12px;
+  min-height: 168px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.terminal-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.3);
+  white-space: nowrap;
+}
+
+.terminal-line.done {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.terminal-prefix {
+  color: rgba(255, 255, 255, 0.25);
+  width: 10px;
+}
+
+.terminal-line.done .terminal-prefix {
+  color: #4ade80;
+}
+
+.terminal-label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.terminal-ok {
+  font-size: 10px;
+  color: #4ade80;
+  letter-spacing: 0.05em;
+}
+
+.terminal-cursor {
+  color: rgba(255, 255, 255, 0.6);
+  animation: blink 1s step-start infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
 }
 
 .loading-bar-track {
-  width: 240px;
-  height: 2px;
-  background: rgba(255, 255, 255, 0.15);
+  width: 160px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .loading-bar-fill {
@@ -25,7 +129,9 @@
 }
 
 .loading-percent {
-  font-size: 12px;
-  letter-spacing: 0.05em;
-  color: rgba(255, 255, 255, 0.6);
+  font-size: 11px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  letter-spacing: 0.15em;
+  color: rgba(255, 255, 255, 0.5);
+  font-variant-numeric: tabular-nums;
 }

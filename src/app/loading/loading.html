@@ -1,4 +1,37 @@
 <div #overlay class="loading-overlay">
+  <svg #cubeSvg class="cube" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <path class="cube-face-base" d="M100,50 L150,77 L100,104 L50,77 Z" />
+    <path class="cube-face-base" d="M50,77 L100,104 L100,158 L50,131 Z" />
+    <path class="cube-face-base" d="M100,104 L150,77 L150,131 L100,158 Z" />
+    <path #topTrace class="cube-face-trace" d="M100,50 L150,77 L100,104 L50,77 Z" />
+    <path #leftTrace class="cube-face-trace" d="M50,77 L100,104 L100,158 L50,131 Z" />
+    <path #rightTrace class="cube-face-trace" d="M100,104 L150,77 L150,131 L100,158 Z" />
+  </svg>
+
+  <div class="terminal">
+    <div class="terminal-header">
+      <span class="terminal-dot"></span>
+      <span class="terminal-dot"></span>
+      <span class="terminal-dot"></span>
+      <span class="terminal-title">boot.sh</span>
+    </div>
+    <div #terminalBody class="terminal-body">
+      @for (task of bootSequence.tasks(); track task.id) {
+        @if (task.status !== 'pending') {
+          <div class="terminal-line" [class.done]="task.status === 'done'">
+            <span class="terminal-prefix">{{ task.status === 'done' ? '✓' : '›' }}</span>
+            <span class="terminal-label">{{ task.label }}</span>
+            @if (task.status === 'done') {
+              <span class="terminal-ok">OK</span>
+            } @else {
+              <span class="terminal-cursor">▌</span>
+            }
+          </div>
+        }
+      }
+    </div>
+  </div>
+
   <div class="loading-bar-track">
     <div #bar class="loading-bar-fill"></div>
   </div>
