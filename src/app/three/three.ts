@@ -17,13 +17,14 @@ import {
   heroVideoCamera,
   heroVideoCameraSlash,
 } from '@ng-icons/heroicons/outline';
+import { Loading } from "../loading/loading";
 
 @Component({
   selector: 'app-three',
   standalone: true,
   templateUrl: './three.html',
   styleUrls: ['./three.css'],
-  imports: [NgIcon],
+  imports: [NgIcon, Loading],
   providers: [
     provideIcons({
       heroLightBulb,
@@ -141,11 +142,12 @@ export class Three implements AfterViewInit {
       });
     }
 
-    if (monitorMesh) {
+        if (monitorMesh) {
       this.interactiveService.addObject(monitorMesh);
     }
 
     this.renderLoop.start();
+    this.threeApp.sceneReady.set(true);
 
     this.destroyRef.onDestroy(() => {
       this.renderLoop.stop();

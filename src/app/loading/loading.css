@@ -1,0 +1,31 @@
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: #0a0a0a;
+}
+
+.loading-bar-track {
+  width: 240px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.loading-bar-fill {
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  transform-origin: left center;
+  transform: scaleX(0);
+}
+
+.loading-percent {
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.6);
+}

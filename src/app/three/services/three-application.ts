@@ -1,4 +1,4 @@
-import { ElementRef, Service } from '@angular/core';
+import { ElementRef, Service, signal } from '@angular/core';
 import * as THREE from 'three';
 import { CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRenderer.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
@@ -12,7 +12,7 @@ export class ThreeApplication {
   public controls!: OrbitControls;
   public webGLRenderer: THREE.WebGLRenderer;
   public cssRenderer: CSS3DRenderer;
-
+  public sceneReady = signal(false);
   private frustumSize = 6;
 
   constructor() {
