@@ -62,8 +62,8 @@ export class Three implements AfterViewInit {
     this.interactiveService.init(this.threeApp.scene, this.threeApp.camera);
     this.bootSequence.complete('renderers');
 
-    const modalName = 'room.glb';
-    const modelTextureName = 'room.jpg';
+    const modalName = '/models/room.glb';
+    const modelTextureName = 'textures/room.jpg';
 
     this.resizeListener = () => this.threeApp.resize();
     window.addEventListener('resize', this.resizeListener);

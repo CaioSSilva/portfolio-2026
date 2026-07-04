@@ -1,0 +1,16 @@
+{
+  "loading": {
+    "tasks": {
+      "renderers": "initializing WEBGL + CSS3D renderers",
+      "model": "loading room geometry",
+      "texture": "applying baked texture",
+      "bounds": "computing scene bounding box",
+      "camera": "positioning initial camera",
+      "monitor": "mounting monitor screen",
+      "interactive": "registering interactive objects",
+      "render-loop": "starting render loop"
+    },
+    "terminalTitle": "boot.sh",
+    "ok": "OK"
+  }
+}

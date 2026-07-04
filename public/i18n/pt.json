@@ -1,0 +1,16 @@
+{
+  "loading": {
+    "tasks": {
+      "renderers": "inicializando renderers WEBGL + CSS3D",
+      "model": "carregando geometria do quarto",
+      "texture": "aplicando textura baked",
+      "bounds": "calculando bounding box da cena",
+      "camera": "posicionando camera inicial",
+      "monitor": "montando tela do monitor",
+      "interactive": "registrando objetos interativos",
+      "render-loop": "iniciando render loop"
+    },
+    "terminalTitle": "inicialização.sh",
+    "ok": "OK"
+  }
+}

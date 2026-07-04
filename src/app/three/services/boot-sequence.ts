@@ -4,19 +4,19 @@ export type BootTaskStatus = 'pending' | 'running' | 'done';
 
 export interface BootTask {
   id: string;
-  label: string;
+  labelKey: string;
   status: BootTaskStatus;
 }
 
 const INITIAL_TASKS: BootTask[] = [
-  { id: 'renderers', label: 'inicializando renderers webgl + css3d', status: 'pending' },
-  { id: 'model', label: 'carregando geometria do quarto', status: 'pending' },
-  { id: 'texture', label: 'aplicando textura baked', status: 'pending' },
-  { id: 'bounds', label: 'calculando bounding box da cena', status: 'pending' },
-  { id: 'camera', label: 'posicionando camera inicial', status: 'pending' },
-  { id: 'monitor', label: 'montando tela do monitor', status: 'pending' },
-  { id: 'interactive', label: 'registrando objetos interativos', status: 'pending' },
-  { id: 'render-loop', label: 'iniciando render loop', status: 'pending' },
+  { id: 'renderers', labelKey: 'loading.tasks.renderers', status: 'pending' },
+  { id: 'model', labelKey: 'loading.tasks.model', status: 'pending' },
+  { id: 'texture', labelKey: 'loading.tasks.texture', status: 'pending' },
+  { id: 'bounds', labelKey: 'loading.tasks.bounds', status: 'pending' },
+  { id: 'camera', labelKey: 'loading.tasks.camera', status: 'pending' },
+  { id: 'monitor', labelKey: 'loading.tasks.monitor', status: 'pending' },
+  { id: 'interactive', labelKey: 'loading.tasks.interactive', status: 'pending' },
+  { id: 'render-loop', labelKey: 'loading.tasks.render-loop', status: 'pending' },
 ];
 
 @Service()

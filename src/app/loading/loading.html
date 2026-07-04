@@ -13,16 +13,16 @@
       <span class="terminal-dot"></span>
       <span class="terminal-dot"></span>
       <span class="terminal-dot"></span>
-      <span class="terminal-title">boot.sh</span>
+      <span class="terminal-title">{{ 'loading.terminalTitle' | translate }}</span>
     </div>
     <div #terminalBody class="terminal-body">
       @for (task of bootSequence.tasks(); track task.id) {
         @if (task.status !== 'pending') {
           <div class="terminal-line" [class.done]="task.status === 'done'">
             <span class="terminal-prefix">{{ task.status === 'done' ? '✓' : '›' }}</span>
-            <span class="terminal-label">{{ task.label }}</span>
+            <span class="terminal-label">{{ task.labelKey | translate }}</span>
             @if (task.status === 'done') {
-              <span class="terminal-ok">OK</span>
+              <span class="terminal-ok">{{ 'loading.ok' | translate }}</span>
             } @else {
               <span class="terminal-cursor">▌</span>
             }

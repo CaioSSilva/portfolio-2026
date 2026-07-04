@@ -3,12 +3,14 @@ import gsap from 'gsap';
 import { Resources } from '../three/services/resources';
 import { ThreeApplication } from '../three/services/three-application';
 import { BootSequence } from '../three/services/boot-sequence';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-loading',
   standalone: true,
   templateUrl: './loading.html',
   styleUrl: './loading.css',
+  imports:[TranslatePipe]
 })
 export class Loading {
   private resources = inject(Resources);
