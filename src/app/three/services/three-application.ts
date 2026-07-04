@@ -67,6 +67,8 @@ export class ThreeApplication {
     this.controls.enableDamping = true;
     this.controls.dampingFactor = 0.05;
 
+    this.controls.maxPolarAngle = Math.PI / 2 - 0.05;
+
     this.setupLighting();
   }
   private setupLighting(): void {

@@ -8,13 +8,14 @@ import { applyBakedTexture } from './shared/utils/baked-model';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { InteractiveObjects } from './services/interactive-objects';
 import { CameraAnimations } from './services/camera-animations';
+import { CameraStates } from './shared/interfaces/camera';
 import {
-  heroSun,
-  heroMoon,
   heroSpeakerWave,
   heroSpeakerXMark,
   heroQuestionMarkCircle,
   heroLightBulb,
+  heroVideoCamera,
+  heroVideoCameraSlash,
 } from '@ng-icons/heroicons/outline';
 
 @Component({
@@ -24,16 +25,25 @@ import {
   styleUrls: ['./three.css'],
   imports: [NgIcon],
   providers: [
-    provideIcons({ heroLightBulb, heroSpeakerWave, heroSpeakerXMark, heroQuestionMarkCircle }),
+    provideIcons({
+      heroLightBulb,
+      heroSpeakerWave,
+      heroSpeakerXMark,
+      heroQuestionMarkCircle,
+      heroVideoCamera,
+      heroVideoCameraSlash,
+    }),
   ],
 })
 export class Three implements AfterViewInit {
   @ViewChild('webglContainer', { static: true }) webglContainer!: ElementRef<HTMLDivElement>;
   @ViewChild('cssContainer', { static: true }) cssContainer!: ElementRef<HTMLDivElement>;
 
+  public cameraStates = CameraStates;
+
   private destroyRef = inject(DestroyRef);
   private interactiveService = inject(InteractiveObjects);
-  private cameraAnimations = inject(CameraAnimations);
+  public cameraAnimations = inject(CameraAnimations);
   private resizeListener!: () => void;
 
   constructor(
@@ -54,7 +64,6 @@ export class Three implements AfterViewInit {
 
     const [modelData, texture] = await Promise.all([
       this.resources.loadModel(modalName),
-      // this.resources.loadTexture(modelTextureName),
       null,
     ]);
 
@@ -95,7 +104,9 @@ export class Three implements AfterViewInit {
       this.threeApp.scene.add(ghostPlane);
 
       this.interactiveService.onObjectClick((clickedObject) => {
-        if (this.cameraAnimations.state === 'IDLE') {
+        const state = this.cameraAnimations.state();
+
+        if (state === CameraStates.IDLE) {
           this.interactiveService.enabled = false;
           this.cameraAnimations.focusOnObject(
             clickedObject,
@@ -104,6 +115,28 @@ export class Three implements AfterViewInit {
             monitorTelaMesh,
             screenElement,
           );
+        } else if (state === CameraStates.FREE_ROAM) {
+          this.interactiveService.enabled = false;
+          this.cameraAnimations.resetFromFreeRoam(() => {
+            this.cameraAnimations.focusOnObject(
+              clickedObject,
+              1.5,
+              () => {},
+              monitorTelaMesh,
+              screenElement,
+            );
+          });
+        } else if (state === CameraStates.FOCUSED) {
+          this.interactiveService.enabled = false;
+          this.cameraAnimations.returnToIdle(() => {
+            this.cameraAnimations.focusOnObject(
+              clickedObject,
+              1.5,
+              () => {},
+              monitorTelaMesh,
+              screenElement,
+            );
+          });
         }
       });
     }
@@ -134,5 +167,14 @@ export class Three implements AfterViewInit {
 
       this.threeApp.webGLRenderer.dispose();
     });
+  }
+
+  toggleControls() {
+    if (this.cameraAnimations.state() === CameraStates.TRANSITIONING) return;
+    if (this.cameraAnimations.state() === CameraStates.FOCUSED) return;
+    
+    this.cameraAnimations.state() === CameraStates.FREE_ROAM
+      ? this.cameraAnimations.resetFromFreeRoam()
+      : this.cameraAnimations.startFreeRoam();
   }
 }

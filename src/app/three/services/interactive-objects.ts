@@ -73,19 +73,16 @@ export class InteractiveObjects {
 
     this.raycaster.setFromCamera(this.mouse, this.camera);
 
-    const intersects = this.raycaster.intersectObjects(this.raycastTargets, true);
+    const intersects = this.raycaster.intersectObjects(this.scene.children, true);
 
     if (!this.enabled) {
-      if (this.boxHelper.visible) {
-        this.boxHelper.visible = false;
-        document.body.style.cursor = 'default';
-        this.hoveredObject = null;
-      }
-      return; 
+      this.clearHover();
+      return;
     }
 
     if (intersects.length > 0) {
       const hitNode = intersects[0].object;
+
       const config = this.findConfigForHit(hitNode);
 
       if (config) {
@@ -99,13 +96,19 @@ export class InteractiveObjects {
           this.boxHelper.visible = true;
           document.body.style.cursor = 'pointer';
         }
+      } else {
+        this.clearHover();
       }
     } else {
-      if (this.hoveredObject) {
-        this.hoveredObject = null;
-        this.boxHelper.visible = false;
-        document.body.style.cursor = 'default';
-      }
+      this.clearHover();
+    }
+  }
+
+  private clearHover(): void {
+    if (this.hoveredObject || this.boxHelper.visible) {
+      this.hoveredObject = null;
+      this.boxHelper.visible = false;
+      document.body.style.cursor = 'default';
     }
   }
 

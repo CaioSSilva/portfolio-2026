@@ -1,18 +1,19 @@
-import { inject, Service } from '@angular/core';
+import { inject, Service, NgZone, signal } from '@angular/core';
 import * as THREE from 'three';
 import gsap from 'gsap';
 import { ThreeApplication } from './three-application';
-import { CameraState } from '../shared/interfaces/camera';
+import { CameraStates } from '../shared/interfaces/camera';
 import { InteractiveObjects } from './interactive-objects';
 
 @Service()
 export class CameraAnimations {
   private threeApp = inject(ThreeApplication);
-
   private interactiveService = inject(InteractiveObjects);
+  private ngZone = inject(NgZone);
   private currentScreenElement?: HTMLElement;
 
-  public state: CameraState = 'IDLE';
+  public state = signal<CameraStates>(CameraStates.IDLE);
+
   private baseCameraPos = new THREE.Vector3();
   private baseTargetPos = new THREE.Vector3();
   private hoverExitTimeout: number | null = null;
@@ -25,7 +26,7 @@ export class CameraAnimations {
   }
 
   public startIdle(): void {
-    this.state = 'IDLE';
+    this.state.set(CameraStates.IDLE);
     if (this.threeApp.controls) {
       this.threeApp.controls.enabled = false;
       this.threeApp.controls.target.copy(this.baseTargetPos);
@@ -42,8 +43,8 @@ export class CameraAnimations {
     referenceMesh?: THREE.Mesh,
     screenElement?: HTMLElement,
   ): void {
-    if (this.state === 'TRANSITIONING') return;
-    this.state = 'TRANSITIONING';
+    if (this.state() === CameraStates.TRANSITIONING) return;
+    this.state.set(CameraStates.TRANSITIONING);
 
     this.currentScreenElement = screenElement;
 
@@ -99,14 +100,16 @@ export class CameraAnimations {
         ease: 'power2.inOut',
         onUpdate: () => camera.lookAt(controls.target),
         onComplete: () => {
-          this.state = 'FOCUSED';
-          controls.update();
-          controls.enabled = true;
-          if (screenElement) {
-            screenElement.style.pointerEvents = 'auto';
-            this.attachScreenHoverGuard(screenElement);
-          }
-          if (onComplete) onComplete();
+          this.ngZone.run(() => {
+            this.state.set(CameraStates.FOCUSED);
+            controls.update();
+            controls.enabled = false;
+            if (screenElement) {
+              screenElement.style.pointerEvents = 'auto';
+              this.attachScreenHoverGuard(screenElement);
+            }
+            if (onComplete) onComplete();
+          });
         },
       });
     }
@@ -127,14 +130,14 @@ export class CameraAnimations {
   }
 
   public update(): void {
-    if (this.state === 'IDLE') {
+    if (this.state() === CameraStates.IDLE) {
       this.threeApp.camera.position.copy(this.baseCameraPos);
       this.threeApp.camera.lookAt(this.baseTargetPos);
     }
   }
 
   private onScreenMouseLeave = () => {
-    if (this.state !== 'FOCUSED') return;
+    if (this.state() !== CameraStates.FOCUSED) return;
     if (this.hoverExitTimeout !== null) return;
     this.hoverExitTimeout = window.setTimeout(() => {
       this.hoverExitTimeout = null;
@@ -164,9 +167,68 @@ export class CameraAnimations {
     }
   }
 
-  public returnToIdle(): void {
-    if (this.state !== 'FOCUSED') return;
-    this.state = 'TRANSITIONING';
+  public returnToIdle(onCompleteCallback?: () => void): void {
+    if (this.state() !== CameraStates.FOCUSED) return;
+    this.state.set(CameraStates.TRANSITIONING);
+
+    const controls = this.threeApp.controls;
+    const camera = this.threeApp.camera;
+
+    gsap.to(camera.position, {
+      x: this.baseCameraPos.x,
+      y: this.baseCameraPos.y,
+      z: this.baseCameraPos.z,
+      duration: 1.2,
+      ease: 'power2.inOut',
+    });
+
+    gsap.to(camera, {
+      zoom: 1,
+      duration: 1.2,
+      ease: 'power2.inOut',
+      onUpdate: () => camera.updateProjectionMatrix(),
+    });
+
+    if (controls) {
+      gsap.to(controls.target, {
+        x: this.baseTargetPos.x,
+        y: this.baseTargetPos.y,
+        z: this.baseTargetPos.z,
+        duration: 1.2,
+        ease: 'power2.inOut',
+        onUpdate: () => camera.lookAt(controls.target),
+        onComplete: () => {
+          this.ngZone.run(() => {
+            controls.enabled = false;
+            if (this.currentScreenElement) {
+              this.detachScreenHoverGuard(this.currentScreenElement);
+              this.currentScreenElement = undefined;
+            }
+            this.startIdle();
+
+            if (onCompleteCallback) {
+              onCompleteCallback();
+            } else {
+              this.interactiveService.enabled = true;
+            }
+          });
+        },
+      });
+    }
+  }
+
+  public startFreeRoam(): void {
+    if (this.state() === CameraStates.TRANSITIONING) return;
+
+    this.state.set(CameraStates.FREE_ROAM);
+    if (this.threeApp.controls) {
+      this.threeApp.controls.enabled = true;
+    }
+  }
+
+  public resetFromFreeRoam(onCompleteCallback?: () => void): void {
+    if (this.state() !== CameraStates.FREE_ROAM) return;
+    this.state.set(CameraStates.TRANSITIONING);
 
     const controls = this.threeApp.controls;
     const camera = this.threeApp.camera;
@@ -197,14 +259,15 @@ export class CameraAnimations {
         ease: 'power2.inOut',
         onUpdate: () => camera.lookAt(controls.target),
         onComplete: () => {
-          controls.enabled = false;
-          if (this.currentScreenElement) {
-            this.detachScreenHoverGuard(this.currentScreenElement);
-            this.currentScreenElement = undefined;
-          }
-          this.startIdle();
+          this.ngZone.run(() => {
+            this.startIdle();
 
-          this.interactiveService.enabled = true;
+            if (onCompleteCallback) {
+              onCompleteCallback();
+            } else {
+              this.interactiveService.enabled = true;
+            }
+          });
         },
       });
     }

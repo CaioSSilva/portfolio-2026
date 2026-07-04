@@ -3,7 +3,7 @@
   height: 100vh;
   overflow: hidden;
   position: relative;
-  background-color: #15151e
+  background-color: #15151e;
 }
 
 .css-container {
@@ -45,15 +45,24 @@
 }
 
 .top-bar button {
-  transition: 0.3;
-  width: 24px;
-  height: 24px;
+  transition: 0.3s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 28px;
+  height: 28px;
   border-radius: 8px;
   background-color: #f3f3f3;
   border: 1.5px solid #15151e;
 }
 
-.top-bar button:hover {
+.top-bar button:not(:disabled):hover {
   cursor: pointer;
   background-color: #e0e0e0;
+}
+
+.top-bar button:disabled {
+  cursor: not-allowed;
+  border: 1.5px solid #15151e80; 
+  opacity: 0.9;
 }

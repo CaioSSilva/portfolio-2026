@@ -1,1 +1,6 @@
-export type CameraState = 'IDLE' | 'TRANSITIONING' | 'FOCUSED';
+export enum CameraStates {
+  IDLE,
+  TRANSITIONING,
+  FOCUSED,
+  FREE_ROAM,
+}
