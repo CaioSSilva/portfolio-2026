@@ -1,8 +1,8 @@
 <div class="scene-wrapper">
   <div class="ui">
     <div class="top-bar">
-      <button><ng-icon name="heroLightBulb" /></button>
-      <button><ng-icon name="heroSpeakerWave" /></button>
+      <button disabled><ng-icon name="heroLightBulb" /></button>
+      <button disabled><ng-icon name="heroSpeakerWave" /></button>
       <button
         (click)="toggleControls()"
         [disabled]="
@@ -18,7 +18,7 @@
           "
         />
       </button>
-      <button><ng-icon name="heroQuestionMarkCircle" /></button>
+      <button disabled><ng-icon name="heroQuestionMarkCircle" /></button>
     </div>
   </div>
   <div #webglContainer class="webgl-container"></div>
