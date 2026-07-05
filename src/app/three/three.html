@@ -2,13 +2,13 @@
   <div class="ui">
     <div class="top-bar">
       <div class="tooltip-wrapper">
-        <button disabled><ng-icon name="heroLightBulb" /></button>
+        <button disabled><ng-icon  size="16" name="heroLightBulb" /></button>
         <span class="tooltip">{{ 
          'debug.unfinished'
         | translate }}</span>
       </div>
       <div class="tooltip-wrapper">
-        <button disabled><ng-icon name="heroSpeakerWave" /></button>
+        <button disabled><ng-icon size="16" name="heroSpeakerWave" /></button>
         <span class="tooltip">{{ 'debug.unfinished' | translate }}</span>
       </div>
       <div class="tooltip-wrapper">
@@ -19,7 +19,7 @@
             cameraAnimations.state() === cameraStates.TRANSITIONING
           "
         >
-          <ng-icon
+          <ng-icon size="16"
             [name]="
               cameraAnimations.state() === cameraStates.FREE_ROAM
                 ? 'heroVideoCameraSlash'
@@ -34,7 +34,7 @@
         </span>
       </div>
       <div class="tooltip-wrapper">
-        <button><ng-icon name="heroQuestionMarkCircle" /></button>
+        <button><ng-icon size="16" name="heroQuestionMarkCircle" /></button>
         <span class="tooltip"> {{ 'menu.titles.help' | translate }}</span>
       </div>
     </div>
