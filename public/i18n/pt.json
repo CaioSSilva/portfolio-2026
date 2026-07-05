@@ -1,16 +1,16 @@
 {
   "loading": {
     "tasks": {
-      "renderers": "inicializando renderers WEBGL + CSS3D",
-      "model": "carregando geometria do quarto",
-      "texture": "aplicando textura baked",
-      "bounds": "calculando bounding box da cena",
-      "camera": "posicionando camera inicial",
-      "monitor": "montando tela do monitor",
-      "interactive": "registrando objetos interativos",
-      "render-loop": "iniciando render loop"
+      "renderers": "Inicializando renderers WEBGL + CSS3D",
+      "model": "Carregando geometria do quarto",
+      "texture": "Aplicando textura baked",
+      "bounds": "Calculando bounding box da cena",
+      "camera": "Posicionando camera inicial",
+      "monitor": "Montando tela do monitor",
+      "interactive": "Registrando objetos interativos",
+      "render-loop": "Iniciando render loop"
     },
-    "terminalTitle": "inicialização.sh",
+    "terminalTitle": "start.sh",
     "ok": "OK"
   },
 
