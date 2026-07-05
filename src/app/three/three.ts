@@ -4,7 +4,6 @@ import { ThreeApplication } from './services/three-application';
 import { RenderLoop } from './services/render-loop';
 import { Resources } from './services/resources';
 import { MonitorScreen } from './services/monitor-screen';
-import { applyBakedTexture } from './shared/utils/baked-model';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { InteractiveObjects } from './services/interactive-objects';
 import { CameraAnimations } from './services/camera-animations';
@@ -17,8 +16,9 @@ import {
   heroVideoCamera,
   heroVideoCameraSlash,
 } from '@ng-icons/heroicons/outline';
-import { Loading } from "../loading/loading";
+import { Loading } from '../loading/loading';
 import { BootSequence } from './services/boot-sequence';
+import { applyBakedTextures } from './shared/utils/baked-model';
 
 @Component({
   selector: 'app-three',
@@ -63,20 +63,21 @@ export class Three implements AfterViewInit {
     this.bootSequence.complete('renderers');
 
     const modalName = '/models/room.glb';
-    const modelTextureName = 'textures/room.jpg';
 
     this.resizeListener = () => this.threeApp.resize();
     window.addEventListener('resize', this.resizeListener);
 
     this.bootSequence.start('model');
-    const [modelData, texture] = await Promise.all([
-      this.resources.loadModel(modalName),
-      null,
-    ]);
+    const modelData = await this.resources.loadModel(modalName);
     this.bootSequence.complete('model');
 
     this.bootSequence.start('texture');
-    const bakedScene = applyBakedTexture(modelData.scene, texture, 1);
+    const bakedScene = await applyBakedTextures(
+      modelData.scene,
+      new THREE.TextureLoader(),
+      'textures',
+      1,
+    );
     modelData.scene.position.y = -1.5;
     this.threeApp.scene.add(bakedScene);
     this.bootSequence.complete('texture');
@@ -193,7 +194,7 @@ export class Three implements AfterViewInit {
   toggleControls() {
     if (this.cameraAnimations.state() === CameraStates.TRANSITIONING) return;
     if (this.cameraAnimations.state() === CameraStates.FOCUSED) return;
-    
+
     this.cameraAnimations.state() === CameraStates.FREE_ROAM
       ? this.cameraAnimations.resetFromFreeRoam()
       : this.cameraAnimations.startFreeRoam();
