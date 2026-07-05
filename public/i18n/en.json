@@ -23,7 +23,20 @@
       "help": "Help"
     },
 
-    "helper": {}
+    "helper": {
+      "sceneTitle": "3D SCENE / CONTROLS",
+      "sceneDesc": "Explore the three-dimensional environment using standard navigation commands:",
+      "controlRotate": "Rotate",
+      "controlRotateDesc": "Left click + Drag",
+      "controlPan": "Pan (Move Camera)",
+      "controlPanDesc": "Right click + Drag",
+      "controlZoom": "Zoom",
+      "controlZoomDesc": "Mouse scroll",
+      "tip": "💡 Tip: If you get lost while moving the scene, you can always use the camera button to start over!",
+      "bugTitle": "FOUND A BUG?",
+      "bugDesc": "This project is open source. If something isn't working as expected, open an Issue detailing the problem in the official repository.",
+      "bugButton": "Report Bug on GitHub"
+    }
   },
 
   "debug":{

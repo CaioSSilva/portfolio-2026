@@ -110,21 +110,23 @@
   height: 100%;
   backdrop-filter: blur(10px);
 }
-
 .helper {
   width: 600px;
   height: 500px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 6px;
   background: #13131b;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .helper-header {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 8px 10px;
+  /* Alterado para alinhar o título na esquerda e o botão na direita naturalmente */
+  justify-content: space-between; 
+  padding: 8px 12px;
   background: rgba(255, 255, 255, 0.03);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
@@ -136,9 +138,9 @@
   color: rgba(255, 255, 255, 0.3);
   letter-spacing: 0.05em;
 }
+
 .helper-close {
-  margin-left: 565px;
-  position: absolute;
+  /* Removido o absolute e a margem estática para evitar quebra de layout */
   width: 20px;
   height: 20px;
   display: flex;
@@ -147,6 +149,7 @@
   align-items: center;
   border-radius: 50%;
   background: rgba(95, 95, 95, 0.45);
+  transition: background 0.2s ease;
 }
 
 .helper-close ng-icon {
@@ -159,4 +162,82 @@
 .helper-close:hover {
   cursor: pointer;
   background: rgba(255, 0, 0, 0.75);
+}
+
+/* --- NOVOS ESTILOS PARA O CONTEÚDO --- */
+
+.helper-content {
+  padding: 20px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.helper-section h3 {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  margin-bottom: 10px;
+}
+
+.helper-section ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 12px 0;
+}
+
+.helper-section li {
+  margin-bottom: 6px;
+  position: relative;
+  padding-left: 12px;
+}
+
+.helper-section li::before {
+  content: ">";
+  position: absolute;
+  left: 0;
+  color: #4f46e5;
+}
+
+.helper-tip {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.02);
+  padding: 8px;
+  border-left: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+.helper-divider {
+  border: none;
+  border-top: 1px dashed rgba(255, 255, 255, 0.08);
+  margin: 20px 0;
+}
+
+.bug-report p {
+  margin-bottom: 15px;
+}
+
+.github-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.github-link:hover {
+  background: #fff;
+  color: #13131b;
+  border-color: #fff;
+  cursor: pointer;
 }

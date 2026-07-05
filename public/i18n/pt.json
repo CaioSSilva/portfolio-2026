@@ -23,7 +23,20 @@
       "help": "Ajuda"
     },
 
-    "helper": {}
+    "helper": {
+      "sceneTitle": "CENA 3D / CONTROLES",
+      "sceneDesc": "Explore o ambiente tridimensional utilizando os comandos padrão de navegação:",
+      "controlRotate": "Rotacionar",
+      "controlRotateDesc": "Clique esquerdo + Arrastar",
+      "controlPan": "Pan (Mover Câmera)",
+      "controlPanDesc": "Clique direito + Arrastar",
+      "controlZoom": "Zoom",
+      "controlZoomDesc": "Scroll do mouse",
+      "tip": "💡 Dica: Caso se perca enquanto move a cena, você sempre poderá usar o botão da camera para recomeçar!",
+      "bugTitle": "ENCONTROU UM BUG?",
+      "bugDesc": "Este projeto é de código aberto. Se algo não estiver funcionando como deveria, abra uma Issue detalhando o problema no repositório oficial.",
+      "bugButton": "Reportar Bug no GitHub"
+    }
   },
 
   "debug": {

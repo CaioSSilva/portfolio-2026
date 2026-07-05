@@ -16,6 +16,7 @@ import {
   heroVideoCamera,
   heroVideoCameraSlash,
   heroXMark,
+  heroBugAnt,
 } from '@ng-icons/heroicons/outline';
 import { Loading } from '../loading/loading';
 import { BootSequence } from '../../shared/services/boot-sequence';
@@ -36,7 +37,8 @@ import { TranslatePipe } from '@ngx-translate/core';
       heroQuestionMarkCircle,
       heroVideoCamera,
       heroVideoCameraSlash,
-      heroXMark
+      heroXMark,
+      heroBugAnt
     }),
   ],
 })
