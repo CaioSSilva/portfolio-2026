@@ -11,7 +11,8 @@
       "render-loop": "Starting render loop"
     },
     "terminalTitle": "boot.sh",
-    "ok": "OK"
+    "ok": "OK",
+    "start":"Start"
   },
 
   "menu": {

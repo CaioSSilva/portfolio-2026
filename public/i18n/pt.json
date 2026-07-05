@@ -11,7 +11,8 @@
       "render-loop": "Iniciando render loop"
     },
     "terminalTitle": "start.sh",
-    "ok": "OK"
+    "ok": "OK",
+    "start":"Começar"
   },
 
   "menu": {

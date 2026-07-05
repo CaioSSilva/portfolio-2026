@@ -10,7 +10,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   standalone: true,
   templateUrl: './loading.html',
   styleUrl: './loading.css',
-  imports:[TranslatePipe]
+  imports: [TranslatePipe],
 })
 export class Loading {
   private resources = inject(Resources);
@@ -25,6 +25,9 @@ export class Loading {
   private leftTrace = viewChild.required<ElementRef<SVGPathElement>>('leftTrace');
   private rightTrace = viewChild.required<ElementRef<SVGPathElement>>('rightTrace');
   private terminalBody = viewChild.required<ElementRef<HTMLDivElement>>('terminalBody');
+  private startBtn = viewChild.required<ElementRef<HTMLDivElement>>('startBtn');
+  private loadingBarContainer =
+    viewChild.required<ElementRef<HTMLDivElement>>('loadingBarContainer');
 
   private displayedProgress = { value: 0 };
   private traceLengths: number[] = [];
@@ -98,16 +101,30 @@ export class Loading {
       if (this.threeApp.sceneReady()) {
         this.floatTween?.kill();
 
-        const traces = [this.topTrace(), this.leftTrace(), this.rightTrace()].map((t) => t.nativeElement);
-
         gsap
           .timeline()
-          .to(traces, { opacity: 0, duration: 0.5, ease: 'power2.in', stagger: 0.08 })
-          .to(this.cubeSvg().nativeElement, { scale: 1.4, duration: 0.8, ease: 'power2.inOut' }, '<')
-          .to('.terminal', { opacity: 0, y: 10, duration: 0.5, ease: 'power2.in' }, '<0.1')
-          .to(this.overlay().nativeElement, { autoAlpha: 0, duration: 0.6, ease: 'power2.inOut' }, '-=0.3')
-          .set(this.overlay().nativeElement, { display: 'none' });
+          .to(this.loadingBarContainer().nativeElement, { display: 'none', ease: 'power2.out' });
+        gsap.timeline().to(this.startBtn().nativeElement, { display: 'block', ease: 'power2.in' }, "<0.5");
       }
     });
+  }
+
+  start() {
+    const traces = [this.topTrace(), this.leftTrace(), this.rightTrace()].map(
+      (t) => t.nativeElement,
+    );
+
+    gsap
+      .timeline()
+      .to(traces, { opacity: 0, duration: 0.5, ease: 'power2.in', stagger: 0.08 })
+      .to(this.cubeSvg().nativeElement, { scale: 1.4, duration: 0.8, ease: 'power2.inOut' }, '<')
+      .to('.terminal', { opacity: 0, y: 10, duration: 0.5, ease: 'power2.in' }, '<0.1')
+      .to(this.startBtn().nativeElement, { opacity: 0, y: 10, duration: 0.5, ease: 'power2.in' }, '<0.1')
+      .to(
+        this.overlay().nativeElement,
+        { autoAlpha: 0, duration: 0.6, ease: 'power2.inOut' },
+        '-=0.3',
+      )
+      .set(this.overlay().nativeElement, { display: 'none' });
   }
 }

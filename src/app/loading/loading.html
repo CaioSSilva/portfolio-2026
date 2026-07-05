@@ -32,8 +32,14 @@
     </div>
   </div>
 
-  <div class="loading-bar-track">
-    <div #bar class="loading-bar-fill"></div>
+  <div #loadingBarContainer class="loadingBarContainer">
+    <div class="loading-bar-track">
+      <div #bar class="loading-bar-fill"></div>
+    </div>
+    <span #percentLabel class="loading-percent">0%</span>
   </div>
-  <span #percentLabel class="loading-percent">0%</span>
+
+  <div (click)="start()" #startBtn class="start">
+    <button>{{'loading.start' | translate }}</button>
+  </div>
 </div>

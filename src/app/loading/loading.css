@@ -112,11 +112,21 @@
 }
 
 @keyframes blink {
-  50% { opacity: 0; }
+  50% {
+    opacity: 0;
+  }
+}
+
+.loadingBarContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .loading-bar-track {
   width: 200px;
+  margin-top: 10px;
   height: 3px;
   border-radius: 3px;
   background: rgba(255, 255, 255, 0.1);
@@ -132,8 +142,29 @@
 
 .loading-percent {
   font-size: 12px;
+  margin-top: 5px;
   font-family: 'SF Mono', 'Fira Code', monospace;
   letter-spacing: 0.15em;
   color: rgba(255, 255, 255, 0.5);
   font-variant-numeric: tabular-nums;
+}
+
+.start {
+  display: none;
+  margin-top: 10px;
+}
+
+.start button {
+  width: 90px;
+  background-color: transparent;
+  border: 1.5px dotted #fff;
+  padding: 5px;
+  color: #fff;
+}
+
+.start button:hover {
+  scale: 1.05;
+  transition: .5;
+  cursor: pointer;
+  border: 1.5px solid;
 }
