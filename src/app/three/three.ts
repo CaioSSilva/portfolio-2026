@@ -19,13 +19,14 @@ import {
 import { Loading } from '../loading/loading';
 import { BootSequence } from './services/boot-sequence';
 import { applyBakedTextures } from './shared/utils/baked-model';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-three',
   standalone: true,
   templateUrl: './three.html',
   styleUrls: ['./three.css'],
-  imports: [NgIcon, Loading],
+  imports: [NgIcon, Loading, TranslatePipe],
   providers: [
     provideIcons({
       heroLightBulb,

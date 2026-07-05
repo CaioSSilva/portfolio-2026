@@ -12,5 +12,18 @@
     },
     "terminalTitle": "inicialização.sh",
     "ok": "OK"
+  },
+
+  "menu": {
+    "titles": {
+      "light": "Luzes",
+      "sound": "Sons",
+      "camera": "Camera",
+      "help": "Ajuda"
+    }
+  },
+
+  "debug":{
+    "unfinished":"Função em desenvolvimento!"
   }
 }

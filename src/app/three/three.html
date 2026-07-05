@@ -1,28 +1,45 @@
 <div class="scene-wrapper">
   <div class="ui">
     <div class="top-bar">
-      <button disabled><ng-icon name="heroLightBulb" /></button>
-      <button disabled><ng-icon name="heroSpeakerWave" /></button>
-      <button
-        (click)="toggleControls()"
-        [disabled]="
-          cameraAnimations.state() === cameraStates.FOCUSED ||
-          cameraAnimations.state() === cameraStates.TRANSITIONING
-        "
-      >
-        <ng-icon
-          [name]="
-            cameraAnimations.state() === cameraStates.FREE_ROAM
-              ? 'heroVideoCameraSlash'
-              : 'heroVideoCamera'
+      <div class="tooltip-wrapper">
+        <button disabled><ng-icon name="heroLightBulb" /></button>
+        <span class="tooltip">{{ 
+         'debug.unfinished'
+        | translate }}</span>
+      </div>
+      <div class="tooltip-wrapper">
+        <button disabled><ng-icon name="heroSpeakerWave" /></button>
+        <span class="tooltip">{{ 'debug.unfinished' | translate }}</span>
+      </div>
+      <div class="tooltip-wrapper">
+        <button
+          (click)="toggleControls()"
+          [disabled]="
+            cameraAnimations.state() === cameraStates.FOCUSED ||
+            cameraAnimations.state() === cameraStates.TRANSITIONING
           "
-        />
-      </button>
-      <button disabled><ng-icon name="heroQuestionMarkCircle" /></button>
+        >
+          <ng-icon
+            [name]="
+              cameraAnimations.state() === cameraStates.FREE_ROAM
+                ? 'heroVideoCameraSlash'
+                : 'heroVideoCamera'
+            "
+          />
+        </button>
+        <span class="tooltip">
+          <span class="tooltip">
+            {{ 'menu.titles.camera' | translate }}
+          </span>
+        </span>
+      </div>
+      <div class="tooltip-wrapper">
+        <button><ng-icon name="heroQuestionMarkCircle" /></button>
+        <span class="tooltip"> {{ 'menu.titles.help' | translate }}</span>
+      </div>
     </div>
   </div>
   <app-loading />
   <div #webglContainer class="webgl-container"></div>
-
   <div #cssContainer class="css-container"></div>
 </div>

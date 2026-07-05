@@ -12,5 +12,18 @@
     },
     "terminalTitle": "boot.sh",
     "ok": "OK"
+  },
+
+  "menu": {
+    "titles": {
+      "light": "Light",
+      "sound": "Sound",
+      "camera": "Camera",
+      "help": "Help"
+    }
+  },
+
+  "debug":{
+    "unfinished":"Feature under development!"
   }
 }
