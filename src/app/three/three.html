@@ -1,11 +1,19 @@
 <div class="scene-wrapper">
+  <div class="helper-wrapper" #helperWrapper>
+    <div class="helper">
+      <div class="helper-header">
+        <span class="helper-title">{{ 'menu.titles.help' | translate }}</span>
+        <button (click)="toggleHelper()" class="helper-close">
+          <ng-icon size="14" name="heroXMark" />
+        </button>
+      </div>
+    </div>
+  </div>
   <div class="ui">
     <div class="top-bar">
       <div class="tooltip-wrapper">
-        <button disabled><ng-icon  size="16" name="heroLightBulb" /></button>
-        <span class="tooltip">{{ 
-         'debug.unfinished'
-        | translate }}</span>
+        <button disabled><ng-icon size="16" name="heroLightBulb" /></button>
+        <span class="tooltip">{{ 'debug.unfinished' | translate }}</span>
       </div>
       <div class="tooltip-wrapper">
         <button disabled><ng-icon size="16" name="heroSpeakerWave" /></button>
@@ -19,7 +27,8 @@
             cameraAnimations.state() === cameraStates.TRANSITIONING
           "
         >
-          <ng-icon size="16"
+          <ng-icon
+            size="16"
             [name]="
               cameraAnimations.state() === cameraStates.FREE_ROAM
                 ? 'heroVideoCameraSlash'
@@ -28,13 +37,13 @@
           />
         </button>
         <span class="tooltip">
-          <span class="tooltip">
-            {{ 'menu.titles.camera' | translate }}
-          </span>
+          {{ 'menu.titles.camera' | translate }}
         </span>
       </div>
       <div class="tooltip-wrapper">
-        <button><ng-icon size="16" name="heroQuestionMarkCircle" /></button>
+        <button (click)="toggleHelper()">
+          <ng-icon size="16" name="heroQuestionMarkCircle" />
+        </button>
         <span class="tooltip"> {{ 'menu.titles.help' | translate }}</span>
       </div>
     </div>

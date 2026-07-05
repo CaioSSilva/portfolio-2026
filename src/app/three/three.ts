@@ -15,6 +15,7 @@ import {
   heroLightBulb,
   heroVideoCamera,
   heroVideoCameraSlash,
+  heroXMark,
 } from '@ng-icons/heroicons/outline';
 import { Loading } from '../loading/loading';
 import { BootSequence } from './services/boot-sequence';
@@ -35,12 +36,14 @@ import { TranslatePipe } from '@ngx-translate/core';
       heroQuestionMarkCircle,
       heroVideoCamera,
       heroVideoCameraSlash,
+      heroXMark
     }),
   ],
 })
 export class Three implements AfterViewInit {
   @ViewChild('webglContainer', { static: true }) webglContainer!: ElementRef<HTMLDivElement>;
   @ViewChild('cssContainer', { static: true }) cssContainer!: ElementRef<HTMLDivElement>;
+  @ViewChild('helperWrapper', { static: true }) helperWrapper!: ElementRef<HTMLDivElement>;
 
   public cameraStates = CameraStates;
 
@@ -199,5 +202,11 @@ export class Three implements AfterViewInit {
     this.cameraAnimations.state() === CameraStates.FREE_ROAM
       ? this.cameraAnimations.resetFromFreeRoam()
       : this.cameraAnimations.startFreeRoam();
+  }
+
+  toggleHelper() {
+    this.helperWrapper.nativeElement.style.display !== 'flex'
+      ? (this.helperWrapper.nativeElement.style.display = 'flex')
+      : (this.helperWrapper.nativeElement.style.display = 'none');
   }
 }

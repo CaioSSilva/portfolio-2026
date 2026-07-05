@@ -12,7 +12,7 @@
     },
     "terminalTitle": "start.sh",
     "ok": "OK",
-    "start":"Começar"
+    "start": "Começar"
   },
 
   "menu": {
@@ -21,10 +21,12 @@
       "sound": "Sons",
       "camera": "Camera",
       "help": "Ajuda"
-    }
+    },
+
+    "helper": {}
   },
 
-  "debug":{
-    "unfinished":"Função em desenvolvimento!"
+  "debug": {
+    "unfinished": "Função em desenvolvimento!"
   }
 }

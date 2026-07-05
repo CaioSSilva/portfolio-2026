@@ -21,7 +21,9 @@
       "sound": "Sound",
       "camera": "Camera",
       "help": "Help"
-    }
+    },
+
+    "helper": {}
   },
 
   "debug":{
