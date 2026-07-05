@@ -1,5 +1,5 @@
 import { Service } from '@angular/core';
-import { ThemeEnum } from '../shared/interfaces/theme';
+import { ThemeEnum } from '../interfaces/theme';
 
 @Service()
 export class Light {

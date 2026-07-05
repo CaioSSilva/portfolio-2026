@@ -2,7 +2,7 @@ import { inject, Service, NgZone, signal } from '@angular/core';
 import * as THREE from 'three';
 import gsap from 'gsap';
 import { ThreeApplication } from './three-application';
-import { CameraStates } from '../shared/interfaces/camera';
+import { CameraStates } from '../interfaces/camera';
 import { InteractiveObjects } from './interactive-objects';
 
 @Service()

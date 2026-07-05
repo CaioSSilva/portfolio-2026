@@ -1,13 +1,13 @@
 import { Component, ElementRef, ViewChild, AfterViewInit, DestroyRef, inject } from '@angular/core';
 import * as THREE from 'three';
-import { ThreeApplication } from './services/three-application';
-import { RenderLoop } from './services/render-loop';
-import { Resources } from './services/resources';
-import { MonitorScreen } from './services/monitor-screen';
+import { ThreeApplication } from '../../shared/services/three-application';
+import { RenderLoop } from '../../shared/services/render-loop';
+import { Resources } from '../../shared/services/resources';
+import { MonitorScreen } from '../../shared/services/monitor-screen';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { InteractiveObjects } from './services/interactive-objects';
-import { CameraAnimations } from './services/camera-animations';
-import { CameraStates } from './shared/interfaces/camera';
+import { InteractiveObjects } from '../../shared/services/interactive-objects';
+import { CameraAnimations } from '../../shared/services/camera-animations';
+import { CameraStates } from '../../shared/interfaces/camera';
 import {
   heroSpeakerWave,
   heroSpeakerXMark,
@@ -18,8 +18,8 @@ import {
   heroXMark,
 } from '@ng-icons/heroicons/outline';
 import { Loading } from '../loading/loading';
-import { BootSequence } from './services/boot-sequence';
-import { applyBakedTextures } from './shared/utils/baked-model';
+import { BootSequence } from '../../shared/services/boot-sequence';
+import { applyBakedTextures } from '../../shared/utils/baked-model';
 import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({

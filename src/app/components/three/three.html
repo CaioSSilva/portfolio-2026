@@ -4,7 +4,7 @@
       <div class="helper-header">
         <span class="helper-title">{{ 'menu.titles.help' | translate }}</span>
         <button (click)="toggleHelper()" class="helper-close">
-          <ng-icon size="14" name="heroXMark" />
+          <ng-icon size="16" name="heroXMark" />
         </button>
       </div>
     </div>
@@ -41,10 +41,10 @@
         </span>
       </div>
       <div class="tooltip-wrapper">
-        <button disabled (click)="toggleHelper()">
+        <button (click)="toggleHelper()">
           <ng-icon size="16" name="heroQuestionMarkCircle" />
         </button>
-        <span class="tooltip"> {{ 'debug.unfinished' | translate }}</span>
+        <span class="tooltip"> {{ 'menu.titles.help' | translate }}</span>
       </div>
     </div>
   </div>

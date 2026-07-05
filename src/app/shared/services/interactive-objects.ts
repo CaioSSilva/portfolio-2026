@@ -1,6 +1,6 @@
 import { Service } from '@angular/core';
 import * as THREE from 'three';
-import { InteractableConfig } from '../shared/interfaces/interactable';
+import { InteractableConfig } from '../interfaces/interactable';
 
 @Service()
 export class InteractiveObjects {

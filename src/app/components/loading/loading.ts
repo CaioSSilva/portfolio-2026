@@ -1,8 +1,8 @@
 import { Component, effect, inject, ElementRef, viewChild, afterNextRender } from '@angular/core';
 import gsap from 'gsap';
-import { Resources } from '../three/services/resources';
-import { ThreeApplication } from '../three/services/three-application';
-import { BootSequence } from '../three/services/boot-sequence';
+import { Resources } from '../../shared/services/resources';
+import { ThreeApplication } from '../../shared/services/three-application';
+import { BootSequence } from '../../shared/services/boot-sequence';
 import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
