@@ -22,7 +22,6 @@
       "camera": "Camera",
       "help": "Help"
     },
-
     "helper": {
       "sceneTitle": "3D SCENE / CONTROLS",
       "sceneDesc": "Explore the three-dimensional environment using standard navigation commands:",
@@ -33,6 +32,10 @@
       "controlZoom": "Zoom",
       "controlZoomDesc": "Mouse scroll",
       "tip": "💡 Tip: If you get lost while moving the scene, you can always use the camera button to start over!",
+      "interactTitle": "INTERACTIVE OBJECTS",
+      "interactDesc": "Certain elements within the scene react to your actions. Hover your cursor over the environment to discover points of interest:",
+      "interactOutline": "Outline Effect",
+      "interactOutlineDesc": "When an object displays a glowing highlighted border, it indicates it is interactive and can be clicked to trigger events.",
       "bugTitle": "FOUND A BUG?",
       "bugDesc": "This project is open source. If something isn't working as expected, open an Issue detailing the problem in the official repository.",
       "bugButton": "Report Bug on GitHub"

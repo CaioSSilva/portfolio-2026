@@ -111,8 +111,8 @@
   backdrop-filter: blur(10px);
 }
 .helper {
-  width: 600px;
-  height: 500px;
+  width: 750px;
+  height: 650px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 6px;
   background: #13131b;
@@ -122,10 +122,10 @@
 }
 
 .helper-header {
+  position: relative;
   display: flex;
   align-items: center;
-  /* Alterado para alinhar o título na esquerda e o botão na direita naturalmente */
-  justify-content: space-between; 
+  justify-content: center;
   padding: 8px 12px;
   background: rgba(255, 255, 255, 0.03);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
@@ -137,10 +137,12 @@
   user-select: none;
   color: rgba(255, 255, 255, 0.3);
   letter-spacing: 0.05em;
+  text-align: center;
 }
 
 .helper-close {
-  /* Removido o absolute e a margem estática para evitar quebra de layout */
+  position: absolute;
+  right: 6px;
   width: 20px;
   height: 20px;
   display: flex;
@@ -163,8 +165,6 @@
   cursor: pointer;
   background: rgba(255, 0, 0, 0.75);
 }
-
-/* --- NOVOS ESTILOS PARA O CONTEÚDO --- */
 
 .helper-content {
   padding: 20px;
@@ -196,7 +196,7 @@
 }
 
 .helper-section li::before {
-  content: ">";
+  content: '>';
   position: absolute;
   left: 0;
   color: #4f46e5;
@@ -205,7 +205,7 @@
 .helper-tip {
   font-size: 12px;
   color: rgba(255, 255, 255, 0.4);
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.05);
   padding: 8px;
   border-left: 2px solid rgba(255, 255, 255, 0.1);
   border-radius: 2px;

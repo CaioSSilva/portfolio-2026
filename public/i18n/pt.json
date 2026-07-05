@@ -22,7 +22,6 @@
       "camera": "Camera",
       "help": "Ajuda"
     },
-
     "helper": {
       "sceneTitle": "CENA 3D / CONTROLES",
       "sceneDesc": "Explore o ambiente tridimensional utilizando os comandos padrão de navegação:",
@@ -33,6 +32,10 @@
       "controlZoom": "Zoom",
       "controlZoomDesc": "Scroll do mouse",
       "tip": "💡 Dica: Caso se perca enquanto move a cena, você sempre poderá usar o botão da camera para recomeçar!",
+      "interactTitle": "OBJETOS INTERATIVOS",
+      "interactDesc": "Alguns elementos da cena reagem às suas ações. Passe o mouse sobre o cenário para descobrir pontos de interesse:",
+      "interactOutline": "Efeito de Borda (Outline)",
+      "interactOutlineDesc": "Quando um objeto ganha uma borda iluminada em destaque, significa que ele é interativo e pode ser clicado para acionar eventos.",
       "bugTitle": "ENCONTROU UM BUG?",
       "bugDesc": "Este projeto é de código aberto. Se algo não estiver funcionando como deveria, abra uma Issue detalhando o problema no repositório oficial.",
       "bugButton": "Reportar Bug no GitHub"
