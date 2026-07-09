@@ -1,9 +1,10 @@
 import * as THREE from 'three';
+import { availableTextures } from './models.mapper';
 
 function resolveTextureName(mesh: THREE.Object3D): string {
   let current: THREE.Object3D | null = mesh;
   while (current) {
-    if (current.name) return normalizeMeshName(current.name);
+    if (current.name && availableTextures.includes(current.name)) return normalizeMeshName(current.name);
     current = current.parent;
   }
   return '';
@@ -24,7 +25,6 @@ export async function applyBakedTextures(
   modelScene.traverse((child) => {
     if (child instanceof THREE.Mesh) {
       meshNames.add(resolveTextureName(child));
-      console.log('mesh.name:', child.name, '| resolved:', resolveTextureName(child));
     }
   });
 

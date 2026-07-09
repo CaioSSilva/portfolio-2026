@@ -1,0 +1,17 @@
+export const availableTextures = [
+  'Cadeira',
+  'Cama',
+  'Carpete',
+  'CarpeteH',
+  'Chao',
+  'Crocs',
+  'Estante',
+  'Mesa.',
+  'Monitor',
+  'Mouse',
+  'Paredes',
+  'Porta',
+  'Rj45',
+  'Roteador',
+  'Xbox_One',
+];
