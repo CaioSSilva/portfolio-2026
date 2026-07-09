@@ -14,8 +14,7 @@ const INITIAL_TASKS: BootTask[] = [
   { id: 'texture', labelKey: 'loading.tasks.texture', status: 'pending' },
   { id: 'bounds', labelKey: 'loading.tasks.bounds', status: 'pending' },
   { id: 'camera', labelKey: 'loading.tasks.camera', status: 'pending' },
-  { id: 'monitor', labelKey: 'loading.tasks.monitor', status: 'pending' },
-  { id: 'interactive', labelKey: 'loading.tasks.interactive', status: 'pending' },
+  { id: 'interactions', labelKey: 'loading.tasks.interactions', status: 'pending' },
   { id: 'render-loop', labelKey: 'loading.tasks.render-loop', status: 'pending' },
 ];
 

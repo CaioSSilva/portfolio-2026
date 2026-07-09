@@ -32,6 +32,13 @@
   position: fixed;
   z-index: 2;
 }
+
+.ui-blurred {
+  opacity: 0.15;
+  filter: blur(4px);
+  pointer-events: none;
+}
+
 .top-bar {
   padding: 5px;
   background-color: #7272728b;

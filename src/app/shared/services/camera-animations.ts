@@ -272,4 +272,28 @@ export class CameraAnimations {
       });
     }
   }
+
+  public safeFocusOnObject(
+    targetObject: THREE.Object3D,
+    fillRatio: number = 0.6,
+    onComplete?: () => void,
+    referenceMesh?: THREE.Mesh,
+    screenElement?: HTMLElement,
+  ): void {
+    const currentState = this.state();
+
+    if (currentState === CameraStates.TRANSITIONING) return;
+
+    if (currentState === CameraStates.IDLE) {
+      this.focusOnObject(targetObject, fillRatio, onComplete, referenceMesh, screenElement);
+    } else if (currentState === CameraStates.FREE_ROAM) {
+      this.resetFromFreeRoam(() => {
+        this.focusOnObject(targetObject, fillRatio, onComplete, referenceMesh, screenElement);
+      });
+    } else if (currentState === CameraStates.FOCUSED) {
+      this.returnToIdle(() => {
+        this.focusOnObject(targetObject, fillRatio, onComplete, referenceMesh, screenElement);
+      });
+    }
+  }
 }

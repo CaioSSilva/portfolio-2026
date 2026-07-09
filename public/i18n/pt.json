@@ -6,15 +6,13 @@
       "texture": "Aplicando textura baked",
       "bounds": "Calculando bounding box da cena",
       "camera": "Posicionando camera inicial",
-      "monitor": "Montando tela do monitor",
-      "interactive": "Registrando objetos interativos",
+      "interactions": "Registrando elementos interativos",
       "render-loop": "Iniciando render loop"
     },
     "terminalTitle": "start.sh",
     "ok": "OK",
     "start": "Começar"
   },
-
   "menu": {
     "titles": {
       "light": "Luzes",
@@ -41,8 +39,21 @@
       "bugButton": "Reportar Bug no GitHub"
     }
   },
-
   "debug": {
     "unfinished": "Função em desenvolvimento!"
+  },
+  "interactive": {
+    "mecha": {
+      "title": "D.Va Tokki MEKA",
+      "desc": "Criados pelo governo sul-coreano para combater a monstruosidade ômnica Gwishin, os MEKAs eram drones autônomos que perderam a sua rede de controle. Para salvar o país, as Forças Armadas recrutaram gamers de elite, como a campeã mundial Hana Song (D.Va), para pilotá-los manualmente usando os seus reflexos."
+    },
+    "ice": {
+      "title": "Iceberg",
+      "desc": "Icebergs são legais!"
+    },
+    "charger": {
+      "title": "Dodge Charger",
+      "desc": "O Dodge Charger é um dos muscle cars americanos mais icônicos da história. Lançado originalmente na década de 1960, ele se tornou um símbolo de potência, velocidade e design agressivo, sendo imortalizado tanto nas pistas de corrida quanto na cultura pop. Famoso por seus potentes motores V8 e ronco inconfundível, o Charger evoluiu ao longo das décadas, mas sempre manteve sua atitude e força brutais como uma verdadeira lenda sobre rodas."
+    }
   }
 }

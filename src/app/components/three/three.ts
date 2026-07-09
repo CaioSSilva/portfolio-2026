@@ -3,7 +3,6 @@ import * as THREE from 'three';
 import { ThreeApplication } from '../../shared/services/three-application';
 import { RenderLoop } from '../../shared/services/render-loop';
 import { Resources } from '../../shared/services/resources';
-import { MonitorScreen } from '../../shared/services/monitor-screen';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { InteractiveObjects } from '../../shared/services/interactive-objects';
 import { CameraAnimations } from '../../shared/services/camera-animations';
@@ -22,13 +21,18 @@ import { Loading } from '../loading/loading';
 import { BootSequence } from '../../shared/services/boot-sequence';
 import { applyBakedTextures } from '../../shared/utils/baked-model';
 import { TranslatePipe } from '@ngx-translate/core';
+import { InteractableFeature } from '../../shared/interfaces/interactable';
+import { Monitor } from '../../shared/services/interactables/monitor';
+import { Zoomable } from '../../shared/services/interactables/zoomable';
+import { ZoomableOverlay } from "../zoomable-overlay/zoomable-overlay";
+
 
 @Component({
   selector: 'app-three',
   standalone: true,
   templateUrl: './three.html',
   styleUrls: ['./three.css'],
-  imports: [NgIcon, Loading, TranslatePipe],
+  imports: [NgIcon, Loading, TranslatePipe, ZoomableOverlay],
   providers: [
     provideIcons({
       heroLightBulb,
@@ -53,13 +57,17 @@ export class Three implements AfterViewInit {
   private interactiveService = inject(InteractiveObjects);
   public cameraAnimations = inject(CameraAnimations);
   private bootSequence = inject(BootSequence);
+  
+  private monitorInteraction = inject(Monitor);
+  private zoomableInteraction = inject(Zoomable);
+  private interactions: InteractableFeature[] = [this.monitorInteraction, this.zoomableInteraction];
+
   private resizeListener!: () => void;
 
   constructor(
     private threeApp: ThreeApplication,
     private renderLoop: RenderLoop,
     private resources: Resources,
-    private monitorScreen: MonitorScreen,
   ) {}
 
   async ngAfterViewInit() {
@@ -102,73 +110,21 @@ export class Three implements AfterViewInit {
     );
 
     this.threeApp.camera.position.copy(posInicialCamera);
-
     this.cameraAnimations.initIdle(posInicialCamera, centroDoQuarto);
     this.bootSequence.complete('camera');
 
-    const monitorTelaMesh = bakedScene.getObjectByName('Monitor_Tela') as THREE.Mesh;
-    const monitorMesh = bakedScene.getObjectByName('Monitor') as THREE.Mesh;
+    this.bootSequence.start('interactions');
+    this.interactions.forEach(interaction => {
+      interaction.setup(this.threeApp.scene, this.cameraAnimations, this.threeApp.cssScene);
+    });
 
-    this.bootSequence.start('monitor');
-    if (monitorTelaMesh) {
-      const { cssObject, ghostPlane } = this.monitorScreen.setupMonitorScreen(
-        monitorTelaMesh,
-        'https://portfolio-caios.vercel.app/',
-      );
-
-      const screenElement = cssObject.element as HTMLElement;
-
-      if (screenElement) {
-        screenElement.style.pointerEvents = 'none';
+    this.interactiveService.onObjectClick((clickedObject) => {
+      const handler = this.interactions.find(i => i.matches(clickedObject.name));
+      if (handler) {
+        handler.onClick(clickedObject, this.cameraAnimations);
       }
-
-      this.threeApp.cssScene.add(cssObject);
-      this.threeApp.scene.add(ghostPlane);
-
-      this.interactiveService.onObjectClick((clickedObject) => {
-        const state = this.cameraAnimations.state();
-
-        if (state === CameraStates.IDLE) {
-          this.interactiveService.enabled = false;
-          this.cameraAnimations.focusOnObject(
-            clickedObject,
-            1.5,
-            () => {},
-            monitorTelaMesh,
-            screenElement,
-          );
-        } else if (state === CameraStates.FREE_ROAM) {
-          this.interactiveService.enabled = false;
-          this.cameraAnimations.resetFromFreeRoam(() => {
-            this.cameraAnimations.focusOnObject(
-              clickedObject,
-              1.5,
-              () => {},
-              monitorTelaMesh,
-              screenElement,
-            );
-          });
-        } else if (state === CameraStates.FOCUSED) {
-          this.interactiveService.enabled = false;
-          this.cameraAnimations.returnToIdle(() => {
-            this.cameraAnimations.focusOnObject(
-              clickedObject,
-              1.5,
-              () => {},
-              monitorTelaMesh,
-              screenElement,
-            );
-          });
-        }
-      });
-    }
-    this.bootSequence.complete('monitor');
-
-    this.bootSequence.start('interactive');
-    if (monitorMesh) {
-      this.interactiveService.addObject(monitorMesh);
-    }
-    this.bootSequence.complete('interactive');
+    });
+    this.bootSequence.complete('interactions');
 
     this.bootSequence.start('render-loop');
     this.renderLoop.start();
@@ -195,6 +151,24 @@ export class Three implements AfterViewInit {
 
       this.threeApp.webGLRenderer.dispose();
     });
+  }
+
+  resetCurrentFocus() {
+    if (this.cameraAnimations.state() !== CameraStates.FOCUSED) return;
+    
+    const activeHandler = this.interactions.find(i => {
+      if (i instanceof Zoomable && (i as any).activeObject()) return true;
+      if (i instanceof Monitor && this.cameraAnimations.state() === CameraStates.FOCUSED) {
+         return this.threeApp.scene.getObjectByName('Monitor_Tela')?.userData['isFocused'];
+      }
+      return false;
+    });
+
+    if (activeHandler && activeHandler.returnToIdle) {
+      activeHandler.returnToIdle(this.cameraAnimations);
+    } else {
+      this.cameraAnimations.returnToIdle();
+    }
   }
 
   toggleControls() {

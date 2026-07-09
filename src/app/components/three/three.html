@@ -60,7 +60,13 @@
       </div>
     </div>
   </div>
-  <div class="ui">
+  <div
+    class="ui"
+    [class.ui-blurred]="
+      cameraAnimations.state() === cameraStates.FOCUSED ||
+      cameraAnimations.state() === cameraStates.TRANSITIONING
+    "
+  >
     <div class="top-bar">
       <div class="tooltip-wrapper">
         <button disabled><ng-icon size="16" name="heroLightBulb" /></button>
@@ -99,7 +105,10 @@
       </div>
     </div>
   </div>
+
   <app-loading />
   <div #webglContainer class="webgl-container"></div>
   <div #cssContainer class="css-container"></div>
+
+  <app-zoomable-overlay />
 </div>
