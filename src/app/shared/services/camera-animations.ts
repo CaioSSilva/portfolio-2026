@@ -70,7 +70,7 @@ export class CameraAnimations {
       worldNormal.negate();
     }
 
-    const safeDistance = 3;
+    const safeDistance = 0.5;
     const finalCameraPos = objectCenter.clone().add(worldNormal.multiplyScalar(safeDistance));
 
     gsap.to(camera.position, {
