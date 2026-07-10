@@ -26,6 +26,7 @@ import { Monitor } from '../../shared/services/interactables/monitor';
 import { Zoomable } from '../../shared/services/interactables/zoomable';
 import { ZoomableOverlay } from "../zoomable-overlay/zoomable-overlay";
 import { SoundingSystem } from '../../shared/services/sounding-system';
+import { Keyboard } from '../../shared/services/interactables/keyboard';
 
 
 @Component({
@@ -59,6 +60,7 @@ export class Three implements AfterViewInit {
   public cameraAnimations = inject(CameraAnimations);
   private bootSequence = inject(BootSequence);
   public audio = inject(SoundingSystem);
+  private keyboardService = inject(Keyboard)
   private monitorInteraction = inject(Monitor);
   private zoomableInteraction = inject(Zoomable);
   private interactions: InteractableFeature[] = [this.monitorInteraction, this.zoomableInteraction];
@@ -131,6 +133,8 @@ export class Three implements AfterViewInit {
     this.renderLoop.start();
     this.bootSequence.complete('render-loop');
     this.threeApp.sceneReady.set(true);
+
+    this.keyboardService.init(this.threeApp.scene)
 
     this.destroyRef.onDestroy(() => {
       this.renderLoop.stop();

@@ -1,4 +1,4 @@
-import { Service, signal } from '@angular/core';
+import { Service, signal, OnDestroy } from '@angular/core';
 
 declare global {
   interface Window {
@@ -7,10 +7,11 @@ declare global {
 }
 
 @Service()
-export class SoundingSystem {
+export class SoundingSystem implements OnDestroy {
   private audioContext?: AudioContext;
   private windowObj = window;
   private bgIntervalId?: number;
+  private boundPlayUIClick = () => this.playUIClick();
 
   audioEnabled = signal(true);
 
@@ -81,7 +82,7 @@ export class SoundingSystem {
     let step = 0;
     const stepDuration = 0.2;
 
-    this.bgIntervalId = setInterval(() => {
+    this.bgIntervalId = window.setInterval(() => {
       if (!this.audioContext || !this.audioEnabled()) return;
 
       let freq = 0;
@@ -125,6 +126,18 @@ export class SoundingSystem {
   }
 
   private startClickMonitoring() {
-    this.windowObj.addEventListener('click', () => this.playUIClick());
+    this.windowObj.addEventListener('click', this.boundPlayUIClick);
+  }
+
+  public ngOnDestroy(): void {
+    this.windowObj.removeEventListener('click', this.boundPlayUIClick);
+
+    if (this.bgIntervalId) {
+      window.clearInterval(this.bgIntervalId);
+    }
+
+    if (this.audioContext && this.audioContext.state !== 'closed') {
+      this.audioContext.close();
+    }
   }
 }
