@@ -29,7 +29,6 @@ import { SoundingSystem } from '../../shared/services/sounding-system';
 import { Keyboard } from '../../shared/services/interactables/keyboard';
 import { Pc } from '../../shared/services/interactables/pc';
 
-
 @Component({
   selector: 'app-three',
   standalone: true,
@@ -61,11 +60,11 @@ export class Three implements AfterViewInit {
   public cameraAnimations = inject(CameraAnimations);
   private bootSequence = inject(BootSequence);
   public audio = inject(SoundingSystem);
-  private keyboardService = inject(Keyboard)
-  private pc = inject(Pc)
+  private keyboardService = inject(Keyboard);
+  private pc = inject(Pc);
   private monitorInteraction = inject(Monitor);
   private zoomableInteraction = inject(Zoomable);
-  private interactions: InteractableFeature[] = [this.monitorInteraction, this.zoomableInteraction];
+  private interactions: InteractableFeature[] = [this.monitorInteraction, this.zoomableInteraction, this.pc];
 
   private resizeListener!: () => void;
 
@@ -136,8 +135,7 @@ export class Three implements AfterViewInit {
     this.bootSequence.complete('render-loop');
     this.threeApp.sceneReady.set(true);
 
-    this.keyboardService.init(this.threeApp.scene)
-    this.pc.init(this.threeApp.scene)
+    this.keyboardService.init(this.threeApp.scene);
 
     this.destroyRef.onDestroy(() => {
       this.renderLoop.stop();

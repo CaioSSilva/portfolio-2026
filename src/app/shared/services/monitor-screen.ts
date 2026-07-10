@@ -1,9 +1,29 @@
-import { Service } from '@angular/core';
+import { effect, inject, Service } from '@angular/core';
 import * as THREE from 'three';
 import { CSS3DObject } from 'three/examples/jsm/renderers/CSS3DRenderer.js';
+import { Pc } from './interactables/pc';
 
 @Service()
 export class MonitorScreen {
+  readonly pc = inject(Pc);
+
+  private screenDiv?: HTMLDivElement;
+  private currentIframeUrl?: string;
+
+  constructor() {
+    effect(() => {
+      const isOn = this.pc.isTurnedOn();
+
+      if (!this.screenDiv || !this.currentIframeUrl) return;
+
+      if (isOn) {
+        this.createIframe(this.screenDiv, this.currentIframeUrl);
+      } else {
+        this.screenDiv.innerHTML = '';
+      }
+    });
+  }
+
   public setupMonitorScreen(tela3D: THREE.Mesh, iframeUrl: string) {
     tela3D.material = new THREE.MeshBasicMaterial({ color: 0x000000 });
     tela3D.updateWorldMatrix(true, true);
@@ -33,12 +53,12 @@ export class MonitorScreen {
     div.style.height = `${alturaPixel}px`;
     div.style.backgroundColor = '#000';
 
-    const iframe = document.createElement('iframe');
-    iframe.src = iframeUrl;
-    iframe.style.width = '100%';
-    iframe.style.height = '100%';
-    iframe.style.border = '0px';
-    div.appendChild(iframe);
+    this.screenDiv = div;
+    this.currentIframeUrl = iframeUrl;
+
+    if (this.pc.isTurnedOn()) {
+      this.createIframe(this.screenDiv, this.currentIframeUrl);
+    }
 
     const cssObject = new CSS3DObject(div);
     cssObject.position.copy(centroGeometrico);
@@ -57,11 +77,23 @@ export class MonitorScreen {
       polygonOffsetFactor: -1,
       polygonOffsetUnits: -1,
     });
+    
     const ghostPlane = new THREE.Mesh(planeGeometry, planeMaterial);
     ghostPlane.position.copy(centroGeometrico);
     ghostPlane.quaternion.copy(worldQuaternion);
     ghostPlane.scale.set(scaleFactor, scaleFactor, scaleFactor);
 
     return { cssObject, ghostPlane, centroGeometrico };
+  }
+
+  private createIframe(div: HTMLDivElement, iframeUrl: string) {
+    const iframe = document.createElement('iframe');
+    iframe.src = iframeUrl;
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+    iframe.style.border = 'none';
+    
+    div.innerHTML = '';
+    div.appendChild(iframe);
   }
 }
