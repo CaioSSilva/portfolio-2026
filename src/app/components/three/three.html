@@ -73,10 +73,10 @@
         <span class="tooltip">{{ 'debug.unfinished' | translate }}</span>
       </div>
       <div class="tooltip-wrapper">
-        <button disabled (click)="audio.audioEnabled.set(!audio.audioEnabled())">
+        <button (click)="audio.audioEnabled.set(!audio.audioEnabled())">
           <ng-icon size="16" [name]="audio.audioEnabled() ? 'heroSpeakerWave' : 'heroSpeakerXMark'" />
         </button>
-        <span class="tooltip">{{ 'debug.unfinished' | translate }}</span>
+        <span class="tooltip">{{ 'menu.titles.sound' | translate }}</span>
       </div>
       <div class="tooltip-wrapper">
         <button

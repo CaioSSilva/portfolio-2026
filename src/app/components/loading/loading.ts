@@ -131,7 +131,6 @@ export class Loading {
       )
       .set(this.overlay().nativeElement, { display: 'none' });
 
-    // this.audio.playUIStart() 
-    // //Subsistema desabiliado temporariamente, necessita refactor do portfólio
+    this.audio.playUIStart()
   }
 }
