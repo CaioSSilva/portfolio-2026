@@ -326,6 +326,48 @@ export class SoundingSystem implements OnDestroy {
     oscillator.stop(time + duration + 0.05);
   }
 
+  public playTypingSound(): void {
+    if (!this.audioContext || !this.audioEnabled()) return;
+
+    const ctx = this.audioContext;
+    const time = ctx.currentTime;
+    const bus = this.ensureAmbientBus();
+
+    const pitchJitter = Math.random() * 300 - 150;
+    const duration = 0.04 + Math.random() * 0.02;
+    const startFreq = 900 + pitchJitter;
+    const endFreq = 250 + pitchJitter * 0.5;
+
+    const oscillator = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+
+    oscillator.type = 'triangle';
+    oscillator.frequency.setValueAtTime(startFreq, time);
+    oscillator.frequency.exponentialRampToValueAtTime(endFreq, time + 0.015);
+
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(1800 + pitchJitter, time);
+    filter.Q.setValueAtTime(1.5, time);
+
+    gainNode.gain.setValueAtTime(0, time);
+    gainNode.gain.linearRampToValueAtTime(0.07, time + 0.003);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, time + duration);
+
+    const sendGain = ctx.createGain();
+    sendGain.gain.setValueAtTime(0.008, time);
+
+    oscillator.connect(filter);
+    filter.connect(gainNode);
+    gainNode.connect(ctx.destination);
+    
+    gainNode.connect(sendGain);
+    sendGain.connect(bus.delay);
+
+    oscillator.start(time);
+    oscillator.stop(time + duration + 0.02);
+  }
+
   public bgMusicLoop(): void {
     if (!this.audioContext || !this.audioEnabled() || this.bgIntervalId) {
       return;

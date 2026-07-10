@@ -62,6 +62,8 @@ export class Keyboard implements OnDestroy {
         ease: 'power2.out',
         overwrite: 'auto',
       });
+
+      this.soundingSystem.playTypingSound()
     }
   }
 
