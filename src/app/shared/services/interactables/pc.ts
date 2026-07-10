@@ -1,4 +1,4 @@
-import { inject, Service, signal, OnDestroy } from '@angular/core';
+import { inject, Service, OnDestroy } from '@angular/core';
 import * as THREE from 'three';
 import gsap from 'gsap';
 
@@ -6,12 +6,13 @@ import { InteractableFeature } from '../../interfaces/interactable';
 import { CameraAnimations } from '../camera-animations';
 import { InteractiveObjects } from '../interactive-objects';
 import { SoundingSystem } from '../sounding-system';
+import { MonitorScreen } from '../monitor-screen';
 
 @Service()
 export class Pc extends InteractableFeature implements OnDestroy {
-  private readonly DEFAULT_PC_URL = 'https://portfolio-caios.vercel.app/';
   private interactiveService = inject(InteractiveObjects);
   private sound = inject(SoundingSystem);
+  private monitorScreen = inject(MonitorScreen);
 
   private model: THREE.Scene | null = null;
   private fanTweens: gsap.core.Tween[] = [];
@@ -24,7 +25,7 @@ export class Pc extends InteractableFeature implements OnDestroy {
 
   private readonly PC_NAME = 'PC';
 
-  isTurnedOn = signal(true);
+  public isTurnedOn = this.monitorScreen.pcIsOn;
 
   matches(objectName: string): boolean {
     return objectName === this.PC_NAME;
@@ -49,7 +50,20 @@ export class Pc extends InteractableFeature implements OnDestroy {
     _object: THREE.Object3D,
     _cameraAnimations: CameraAnimations
   ): void {
-    this.togglePower();
+    const isOn = this.isTurnedOn();
+    const isShowingPc = this.monitorScreen.activeSource() === 'pc';
+
+    if (isOn) {
+      if (!isShowingPc) {
+        this.monitorScreen.activeSource.set('pc');
+      } else {
+        this.togglePower();
+        this.monitorScreen.activeSource.set('xbox');
+      }
+    } else {
+      this.togglePower();
+      this.monitorScreen.activeSource.set('pc');
+    }
   }
 
   returnToIdle(cameraAnimations: CameraAnimations): void {

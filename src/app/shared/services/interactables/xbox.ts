@@ -1,14 +1,16 @@
-import { inject, Service, signal } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import * as THREE from 'three';
 import { InteractableFeature } from '../../interfaces/interactable';
 import { CameraAnimations } from '../camera-animations';
 import { InteractiveObjects } from '../interactive-objects';
+import { MonitorScreen } from '../monitor-screen';
 
 @Service()
 export class Xbox extends InteractableFeature {
   private interactiveObjects = inject(InteractiveObjects);
+  private monitorScreen = inject(MonitorScreen);
 
-  public isXboxOn = signal(true)
+  public isXboxOn = this.monitorScreen.xboxIsOn;
 
   private readonly XBOX_NAME = 'Xbox_One';
 
@@ -32,8 +34,7 @@ export class Xbox extends InteractableFeature {
     _object: THREE.Object3D,
     _cameraAnimations: CameraAnimations
   ): void {
-   
-    
+    this.monitorScreen.activeSource.set('xbox');
   }
 
   returnToIdle(cameraAnimations: CameraAnimations): void {

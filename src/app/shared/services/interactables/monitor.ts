@@ -4,13 +4,11 @@ import { InteractiveObjects } from '../interactive-objects';
 import { MonitorScreen } from '../monitor-screen';
 import { CameraAnimations } from '../camera-animations';
 import * as THREE from 'three';
-import { Pc } from './pc';
 
 @Service()
 export class Monitor extends InteractableFeature {
   private monitorScreen = inject(MonitorScreen);
   private interactiveService = inject(InteractiveObjects);
-  private pc = inject(Pc);
 
   private monitorMesh?: THREE.Mesh;
   private monitorTelaMesh?: THREE.Mesh;
@@ -20,12 +18,12 @@ export class Monitor extends InteractableFeature {
     super();
 
     effect(() => {
-      const isOn = this.pc.isTurnedOn();
+      const hasDisplay = !!this.monitorScreen.currentUrl();
 
       if (this.monitorMesh) {
         this.monitorMesh.traverse((child) => {
           if (child instanceof THREE.Mesh) {
-            child.raycast = isOn ? THREE.Mesh.prototype.raycast : () => {};
+            child.raycast = hasDisplay ? THREE.Mesh.prototype.raycast : () => {};
           }
         });
       }
@@ -33,7 +31,7 @@ export class Monitor extends InteractableFeature {
   }
 
   matches(objectName: string): boolean {
-    return objectName === 'Monitor' && this.pc.isTurnedOn();
+    return objectName === 'Monitor' && !!this.monitorScreen.currentUrl();
   }
 
   setup(scene: THREE.Scene, _cameraAnimations: CameraAnimations, cssScene?: THREE.Scene): void {
@@ -42,8 +40,7 @@ export class Monitor extends InteractableFeature {
 
     if (this.monitorTelaMesh) {
       const { cssObject, ghostPlane } = this.monitorScreen.setupMonitorScreen(
-        this.monitorTelaMesh,
-        'https://portfolio-caios.vercel.app/',
+        this.monitorTelaMesh
       );
 
       this.screenElement = cssObject.element as HTMLElement;
@@ -55,10 +52,10 @@ export class Monitor extends InteractableFeature {
     if (this.monitorMesh) {
       this.interactiveService.addObject(this.monitorMesh);
 
-      const isOn = this.pc.isTurnedOn();
+      const hasDisplay = !!this.monitorScreen.currentUrl();
       this.monitorMesh.traverse((child) => {
         if (child instanceof THREE.Mesh) {
-          child.raycast = isOn ? THREE.Mesh.prototype.raycast : () => {};
+          child.raycast = hasDisplay ? THREE.Mesh.prototype.raycast : () => {};
         }
       });
     }

@@ -1,30 +1,45 @@
-import { effect, inject, Service } from '@angular/core';
+import { effect, Service, signal, computed } from '@angular/core';
 import * as THREE from 'three';
 import { CSS3DObject } from 'three/examples/jsm/renderers/CSS3DRenderer.js';
-import { Pc } from './interactables/pc';
 
 @Service()
 export class MonitorScreen {
-  readonly pc = inject(Pc);
+  public pcIsOn = signal(true);
+  public xboxIsOn = signal(true);
+  public activeSource = signal<'pc' | 'xbox'>('pc');
+
+  public readonly PC_URL = 'https://portfolio-caios.vercel.app/';
+  public readonly XBOX_URL = 'https://caiossilva.github.io/xbox-dash/';
+
+  public currentUrl = computed(() => {
+    const pcOn = this.pcIsOn();
+    const xboxOn = this.xboxIsOn();
+    const source = this.activeSource();
+
+    if (source === 'pc' && pcOn) return this.PC_URL;
+    if (source === 'xbox' && xboxOn) return this.XBOX_URL;
+    if (pcOn) return this.PC_URL;
+    if (xboxOn) return this.XBOX_URL;
+    return '';
+  });
 
   private screenDiv?: HTMLDivElement;
-  private currentIframeUrl?: string;
 
   constructor() {
     effect(() => {
-      const isOn = this.pc.isTurnedOn();
+      const url = this.currentUrl();
 
-      if (!this.screenDiv || !this.currentIframeUrl) return;
+      if (!this.screenDiv) return;
 
-      if (isOn) {
-        this.createIframe(this.screenDiv, this.currentIframeUrl);
+      if (url) {
+        this.createIframe(this.screenDiv, url);
       } else {
         this.screenDiv.innerHTML = '';
       }
     });
   }
 
-  public setupMonitorScreen(tela3D: THREE.Mesh, iframeUrl: string) {
+  public setupMonitorScreen(tela3D: THREE.Mesh) {
     tela3D.material = new THREE.MeshBasicMaterial({ color: 0x000000 });
     tela3D.updateWorldMatrix(true, true);
 
@@ -54,10 +69,9 @@ export class MonitorScreen {
     div.style.backgroundColor = '#000';
 
     this.screenDiv = div;
-    this.currentIframeUrl = iframeUrl;
 
-    if (this.pc.isTurnedOn()) {
-      this.createIframe(this.screenDiv, this.currentIframeUrl);
+    if (this.currentUrl()) {
+      this.createIframe(this.screenDiv, this.currentUrl());
     }
 
     const cssObject = new CSS3DObject(div);
