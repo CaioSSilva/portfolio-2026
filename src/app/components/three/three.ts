@@ -28,6 +28,7 @@ import { ZoomableOverlay } from "../zoomable-overlay/zoomable-overlay";
 import { SoundingSystem } from '../../shared/services/sounding-system';
 import { Keyboard } from '../../shared/services/interactables/keyboard';
 import { Pc } from '../../shared/services/interactables/pc';
+import { Xbox } from '../../shared/services/interactables/xbox';
 
 @Component({
   selector: 'app-three',
@@ -62,9 +63,10 @@ export class Three implements AfterViewInit {
   public audio = inject(SoundingSystem);
   private keyboardService = inject(Keyboard);
   private pc = inject(Pc);
+  private xbox = inject(Xbox)
   private monitorInteraction = inject(Monitor);
   private zoomableInteraction = inject(Zoomable);
-  private interactions: InteractableFeature[] = [this.monitorInteraction, this.zoomableInteraction, this.pc];
+  private interactions: InteractableFeature[] = [this.monitorInteraction, this.zoomableInteraction, this.pc, this.xbox];
 
   private resizeListener!: () => void;
 

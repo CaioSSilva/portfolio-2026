@@ -1,6 +1,7 @@
 import { inject, Service, signal, OnDestroy } from '@angular/core';
 import * as THREE from 'three';
 import gsap from 'gsap';
+
 import { InteractableFeature } from '../../interfaces/interactable';
 import { CameraAnimations } from '../camera-animations';
 import { InteractiveObjects } from '../interactive-objects';
@@ -8,11 +9,19 @@ import { SoundingSystem } from '../sounding-system';
 
 @Service()
 export class Pc extends InteractableFeature implements OnDestroy {
+  private readonly DEFAULT_PC_URL = 'https://portfolio-caios.vercel.app/';
   private interactiveService = inject(InteractiveObjects);
   private sound = inject(SoundingSystem);
+
   private model: THREE.Scene | null = null;
   private fanTweens: gsap.core.Tween[] = [];
-  private readonly fanNames = ['Fan_Gpu_1', 'Fan_Gpu_2', 'Fan_Gpu_3'];
+
+  private readonly fanNames = [
+    'Fan_Gpu_1',
+    'Fan_Gpu_2',
+    'Fan_Gpu_3'
+  ];
+
   private readonly PC_NAME = 'PC';
 
   isTurnedOn = signal(true);
@@ -21,7 +30,11 @@ export class Pc extends InteractableFeature implements OnDestroy {
     return objectName === this.PC_NAME;
   }
 
-  setup(scene: THREE.Scene, cameraAnimations: CameraAnimations, cssScene?: THREE.Scene): void {
+  setup(
+    scene: THREE.Scene,
+    _cameraAnimations: CameraAnimations,
+    _cssScene?: THREE.Scene
+  ): void {
     this.model = scene;
 
     const pcMesh = scene.getObjectByName(this.PC_NAME);
@@ -32,7 +45,10 @@ export class Pc extends InteractableFeature implements OnDestroy {
     }
   }
 
-  onClick(object: THREE.Object3D, cameraAnimations: CameraAnimations): void {
+  onClick(
+    _object: THREE.Object3D,
+    _cameraAnimations: CameraAnimations
+  ): void {
     this.togglePower();
   }
 
@@ -42,13 +58,15 @@ export class Pc extends InteractableFeature implements OnDestroy {
 
   public togglePower(): void {
     const newState = !this.isTurnedOn();
+
     this.isTurnedOn.set(newState);
 
+    this.sound.playMonitorPower(newState ? 'on' : 'off');
+
     if (newState) {
-      this.sound.playMonitorPower(newState ? 'on' : 'off');
-      this.fanTweens.forEach((tween) => tween.play());
+      this.fanTweens.forEach(t => t.play());
     } else {
-      this.fanTweens.forEach((tween) => tween.pause());
+      this.fanTweens.forEach(t => t.pause());
     }
   }
 
@@ -57,29 +75,29 @@ export class Pc extends InteractableFeature implements OnDestroy {
 
     this.clearTweens();
 
-    this.fanNames.forEach((fanName) => {
-      const fanMesh = this.model!.getObjectByName(fanName);
+    this.fanNames.forEach(name => {
+      const fan = this.model!.getObjectByName(name);
 
-      if (fanMesh) {
-        const tween = gsap.to(fanMesh.rotation, {
-          z: '+=6.28319',
-          duration: 0.5,
-          repeat: -1,
-          ease: 'none',
-          paused: !this.isTurnedOn(),
-        });
+      if (!fan) return;
 
-        this.fanTweens.push(tween);
-      }
+      const tween = gsap.to(fan.rotation, {
+        z: '+=6.28319',
+        duration: 0.5,
+        ease: 'none',
+        repeat: -1,
+        paused: !this.isTurnedOn(),
+      });
+
+      this.fanTweens.push(tween);
     });
   }
 
   private clearTweens(): void {
-    this.fanTweens.forEach((tween) => tween.kill());
+    this.fanTweens.forEach(t => t.kill());
     this.fanTweens = [];
   }
 
-  public ngOnDestroy(): void {
+  ngOnDestroy(): void {
     this.clearTweens();
   }
 }
