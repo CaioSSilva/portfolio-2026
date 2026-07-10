@@ -67,6 +67,9 @@ export class ThreeApplication {
     this.controls.enableDamping = true;
     this.controls.dampingFactor = 0.05;
 
+    this.controls.minZoom = 1;
+    this.controls.maxZoom = 40;
+
     this.controls.maxPolarAngle = Math.PI / 2 - 0.05;
     this.controls.minAzimuthAngle = Math.PI / 2;
     this.controls.maxAzimuthAngle = -Math.PI;
