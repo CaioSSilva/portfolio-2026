@@ -54,6 +54,26 @@
     "charger": {
       "title": "Dodge Charger",
       "desc": "The Dodge Charger is one of the most iconic American muscle cars in history. Originally launched in the 1960s, it became a symbol of power, speed, and aggressive design, immortalized both on the racetrack and in pop culture. Famous for its roaring V8 engines and unmistakable sound, the Charger has evolved over the decades but has always maintained its brutal attitude and strength as a true legend on wheels."
+    },
+    "lava_lamp": {
+      "title": "Lava Lamp",
+      "desc": "A true classic of retro and geek decor. With its hypnotic movement of wax flowing in an illuminated liquid, it brings a relaxing atmosphere, a touch of color, and nostalgia to the setup."
+    },
+    "rose_sword": {
+      "title": "Rose's Sword",
+      "desc": "A replica of the iconic Rose Quartz sword from Steven Universe. With its characteristic pink blade and floral-detailed guard, it's a collector's item that symbolizes strength, leadership, and compassion."
+    },
+    "fifine_k668": {
+      "title": "Fifine K668 Microphone",
+      "desc": "A very popular USB condenser microphone known for its excellent cost-benefit. Compact and efficient, it is the ideal companion for starting in the streaming world, recording podcasts, or ensuring crystal-clear communication during gameplay."
+    },
+    "sony_a3": {
+      "title": "Sony Alpha 3 Camera",
+      "desc": "A robust digital camera widely used by content creators seeking professional quality. In the setup, it serves both to capture incredible photographs and to elevate the image quality during live streams."
+    },
+    "ps2": {
+      "title": "PlayStation 2",
+      "desc": "The best-selling home console of all time. A true legend in video game history that defined an entire generation of players with a vast and unforgettable library of classics."
     }
   }
 }

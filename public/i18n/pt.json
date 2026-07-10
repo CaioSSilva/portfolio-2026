@@ -54,6 +54,26 @@
     "charger": {
       "title": "Dodge Charger",
       "desc": "O Dodge Charger é um dos muscle cars americanos mais icônicos da história. Lançado originalmente na década de 1960, ele se tornou um símbolo de potência, velocidade e design agressivo, sendo imortalizado tanto nas pistas de corrida quanto na cultura pop. Famoso por seus potentes motores V8 e ronco inconfundível, o Charger evoluiu ao longo das décadas, mas sempre manteve sua atitude e força brutais como uma verdadeira lenda sobre rodas."
+    },
+    "lava_lamp": {
+      "title": "Lâmpada de Lava",
+      "desc": "Um verdadeiro clássico da decoração retrô e geek. Com o seu movimento hipnótico de cera fluindo em um líquido iluminado, ela traz uma atmosfera relaxante e um toque de cor e nostalgia para o setup."
+    },
+    "rose_sword": {
+      "title": "Espada da Rose",
+      "desc": "Uma réplica da icônica espada de Rose Quartz de Steven Universe. Com sua característica lâmina cor-de-rosa e guarda com detalhes florais, é uma peça de colecionador que simboliza força, liderança e compaixão."
+    },
+    "fifine_k668": {
+      "title": "Microfone Fifine K668",
+      "desc": "Um microfone USB condensador muito popular pelo seu excelente custo-benefício. Compacto e eficiente, é o companheiro ideal para iniciar no mundo do streaming, gravar podcasts ou garantir uma comunicação cristalina durante o gameplay."
+    },
+    "sony_a3": {
+      "title": "Câmera Sony Alpha 3",
+      "desc": "Uma câmera digital robusta, muito utilizada por criadores de conteúdo que buscam qualidade profissional. No setup, ela serve tanto para capturar fotografias incríveis quanto para elevar o nível da imagem nas transmissões ao vivo."
+    },
+    "ps2": {
+      "title": "PlayStation 2",
+      "desc": "O console de mesa mais vendido de todos os tempos. Uma verdadeira lenda da história dos videogames que definiu uma geração inteira de jogadores com uma biblioteca vasta e inesquecível de clássicos."
     }
   }
 }
