@@ -25,6 +25,7 @@ import { InteractableFeature } from '../../shared/interfaces/interactable';
 import { Monitor } from '../../shared/services/interactables/monitor';
 import { Zoomable } from '../../shared/services/interactables/zoomable';
 import { ZoomableOverlay } from "../zoomable-overlay/zoomable-overlay";
+import { SoundingSystem } from '../../shared/services/sounding-system';
 
 
 @Component({
@@ -57,7 +58,7 @@ export class Three implements AfterViewInit {
   private interactiveService = inject(InteractiveObjects);
   public cameraAnimations = inject(CameraAnimations);
   private bootSequence = inject(BootSequence);
-  
+  public audio = inject(SoundingSystem);
   private monitorInteraction = inject(Monitor);
   private zoomableInteraction = inject(Zoomable);
   private interactions: InteractableFeature[] = [this.monitorInteraction, this.zoomableInteraction];

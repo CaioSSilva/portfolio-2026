@@ -4,6 +4,7 @@ import { Resources } from '../../shared/services/resources';
 import { ThreeApplication } from '../../shared/services/three-application';
 import { BootSequence } from '../../shared/services/boot-sequence';
 import { TranslatePipe } from '@ngx-translate/core';
+import { SoundingSystem } from '../../shared/services/sounding-system';
 
 @Component({
   selector: 'app-loading',
@@ -15,6 +16,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 export class Loading {
   private resources = inject(Resources);
   private threeApp = inject(ThreeApplication);
+  private audio = inject(SoundingSystem);
   public bootSequence = inject(BootSequence);
 
   private overlay = viewChild.required<ElementRef<HTMLDivElement>>('overlay');
@@ -110,6 +112,8 @@ export class Loading {
   }
 
   start() {
+    this.audio.initAudio()
+
     const traces = [this.topTrace(), this.leftTrace(), this.rightTrace()].map(
       (t) => t.nativeElement,
     );
@@ -126,5 +130,8 @@ export class Loading {
         '-=0.3',
       )
       .set(this.overlay().nativeElement, { display: 'none' });
+
+    // this.audio.playUIStart() 
+    // //Subsistema desabiliado temporariamente, necessita refactor do portfólio
   }
 }
