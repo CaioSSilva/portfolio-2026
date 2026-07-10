@@ -34,9 +34,9 @@ export const MODELS_MAPPER: Record<string, ModelMetadata> = {
     labelKey: 'interactive.charger.title',
     descriptionKey: 'interactive.charger.desc',
   },
-  Lava_Lamp: {
-    labelKey: 'interactive.lava_lamp.title',
-    descriptionKey: 'interactive.lava_lamp.desc',
+  UltraT: {
+    labelKey: 'interactive.ultra_t.title',
+    descriptionKey: 'interactive.ultra_t.desc',
   },
 
   Rose_Sword: {
