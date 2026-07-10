@@ -4,12 +4,14 @@ import gsap from 'gsap';
 import { ThreeApplication } from './three-application';
 import { CameraStates } from '../interfaces/camera';
 import { InteractiveObjects } from './interactive-objects';
+import { SoundingSystem } from './sounding-system';
 
 @Service()
 export class CameraAnimations {
   private threeApp = inject(ThreeApplication);
   private interactiveService = inject(InteractiveObjects);
   private ngZone = inject(NgZone);
+  private sound = inject(SoundingSystem);
   private currentScreenElement?: HTMLElement;
 
   public state = signal<CameraStates>(CameraStates.IDLE);
@@ -90,6 +92,8 @@ export class CameraAnimations {
       ease: 'power2.inOut',
       onUpdate: () => camera.updateProjectionMatrix(),
     });
+
+    this.sound.playCameraTransition(1.5, 'in');
 
     if (controls) {
       gsap.to(controls.target, {
@@ -188,6 +192,8 @@ export class CameraAnimations {
       ease: 'power2.inOut',
       onUpdate: () => camera.updateProjectionMatrix(),
     });
+
+    this.sound.playCameraTransition(1.2, 'out');
 
     if (controls) {
       gsap.to(controls.target, {

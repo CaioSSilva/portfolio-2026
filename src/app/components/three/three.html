@@ -69,17 +69,26 @@
   >
     <div class="top-bar">
       <div class="tooltip-wrapper">
-        <button disabled><ng-icon size="16" name="heroLightBulb" /></button>
+        <button disabled (mouseenter)="audio.playNavHoverTick()">
+          <ng-icon size="16" name="heroLightBulb" />
+        </button>
         <span class="tooltip">{{ 'debug.unfinished' | translate }}</span>
       </div>
       <div class="tooltip-wrapper">
-        <button (click)="audio.audioEnabled.set(!audio.audioEnabled())">
-          <ng-icon size="16" [name]="audio.audioEnabled() ? 'heroSpeakerWave' : 'heroSpeakerXMark'" />
+        <button
+          (mouseenter)="audio.playNavHoverTick()"
+          (click)="audio.playAudioToggle(); audio.audioEnabled.set(!audio.audioEnabled())"
+        >
+          <ng-icon
+            size="16"
+            [name]="audio.audioEnabled() ? 'heroSpeakerWave' : 'heroSpeakerXMark'"
+          />
         </button>
         <span class="tooltip">{{ 'menu.titles.sound' | translate }}</span>
       </div>
       <div class="tooltip-wrapper">
         <button
+          (mouseenter)="audio.playNavHoverTick()"
           (click)="toggleControls()"
           [disabled]="
             cameraAnimations.state() === cameraStates.FOCUSED ||
@@ -100,7 +109,7 @@
         </span>
       </div>
       <div class="tooltip-wrapper">
-        <button (click)="toggleHelper()">
+        <button (mouseenter)="audio.playNavHoverTick()" (click)="toggleHelper()">
           <ng-icon size="16" name="heroQuestionMarkCircle" />
         </button>
         <span class="tooltip"> {{ 'menu.titles.help' | translate }}</span>

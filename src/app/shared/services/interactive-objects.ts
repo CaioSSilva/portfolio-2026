@@ -1,9 +1,12 @@
-import { Service } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import * as THREE from 'three';
 import { InteractableConfig } from '../interfaces/interactable';
+import { SoundingSystem } from './sounding-system';
 
 @Service()
 export class InteractiveObjects {
+  private sound = inject(SoundingSystem);
+
   private raycaster: THREE.Raycaster = new THREE.Raycaster();
   private mouse: THREE.Vector2 = new THREE.Vector2();
   private boxHelper!: THREE.BoxHelper;
@@ -95,6 +98,7 @@ export class InteractiveObjects {
           this.boxHelper.update();
           this.boxHelper.visible = true;
           document.body.style.cursor = 'pointer';
+          this.sound.playHoverBlip();
         }
       } else {
         this.clearHover();

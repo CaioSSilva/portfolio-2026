@@ -6,10 +6,12 @@ import { InteractiveObjects } from '../interactive-objects';
 import { CameraStates } from '../../interfaces/camera';
 import { getModelMetadata, ModelMetadata, MODELS_MAPPER } from '../../utils/models.mapper';
 import { InteractableFeature } from '../../interfaces/interactable';
+import { SoundingSystem } from '../sounding-system';
 
 @Injectable({ providedIn: 'root' })
 export class Zoomable extends InteractableFeature {
   private interactiveService = inject(InteractiveObjects);
+  private sound = inject(SoundingSystem);
   private mainScene!: THREE.Scene;
 
   public activeObject = signal<THREE.Object3D | null>(null);
@@ -94,6 +96,8 @@ export class Zoomable extends InteractableFeature {
       ease: 'power2.inOut',
     });
 
+    this.sound.playCameraTransition(1.2, 'in');
+
     gsap.to(pivotContainer.position, {
       x: targetWorldPosition.x,
       y: targetWorldPosition.y,
@@ -149,6 +153,8 @@ export class Zoomable extends InteractableFeature {
         },
       });
     }
+
+    this.sound.playCameraTransition(1, 'out');
 
     if (pivotContainer) {
       gsap.to(pivotContainer.position, {
