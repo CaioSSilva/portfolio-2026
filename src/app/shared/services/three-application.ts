@@ -1,12 +1,16 @@
-import { ElementRef, Service, signal } from '@angular/core';
+import { effect, ElementRef, inject, Service, signal } from '@angular/core';
 import * as THREE from 'three';
 import { CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRenderer.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { Light } from './light';
+import { ThemeEnum } from '../interfaces/theme';
 
 @Service()
 export class ThreeApplication {
   public scene = new THREE.Scene();
   public cssScene = new THREE.Scene();
+
+  lights = inject(Light);
 
   public camera!: THREE.OrthographicCamera;
   public controls!: OrbitControls;
@@ -14,6 +18,8 @@ export class ThreeApplication {
   public cssRenderer: CSS3DRenderer;
   public sceneReady = signal(false);
   private frustumSize = 6;
+
+  private lightGroup = new THREE.Group();
 
   constructor() {
     this.scene.background = null;
@@ -31,6 +37,14 @@ export class ThreeApplication {
     this.webGLRenderer.toneMapping = THREE.ACESFilmicToneMapping;
 
     this.cssRenderer = new CSS3DRenderer();
+
+    effect(() => {
+      if (this.lights.lightState() === ThemeEnum.dark) {
+        this.scene.remove(this.lightGroup);
+      } else {
+        this.scene.add(this.lightGroup);
+      }
+    });
   }
 
   public frustumSizeValue(): number {
@@ -78,11 +92,11 @@ export class ThreeApplication {
   }
   private setupLighting(): void {
     const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
-    this.scene.add(ambientLight);
+    this.lightGroup.add(ambientLight);
 
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.6);
     hemiLight.position.set(0, 20, 0);
-    this.scene.add(hemiLight);
+    this.lightGroup.add(hemiLight);
 
     const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
     dirLight.position.set(5, 10, 7);
@@ -90,7 +104,7 @@ export class ThreeApplication {
     dirLight.shadow.bias = -0.0005;
     dirLight.shadow.mapSize.width = 2048;
     dirLight.shadow.mapSize.height = 2048;
-    this.scene.add(dirLight);
+    this.lightGroup.add(dirLight);
   }
 
   public resize(): void {

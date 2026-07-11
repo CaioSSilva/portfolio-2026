@@ -1,29 +1,42 @@
-import { inject, Service } from '@angular/core';
+import { inject, Service, effect } from '@angular/core';
 import * as THREE from 'three';
 import { InteractableConfig } from '../interfaces/interactable';
 import { SoundingSystem } from './sounding-system';
+import { Light } from './light';
+import { ThemeEnum } from '../interfaces/theme';
 
 @Service()
 export class InteractiveObjects {
   private sound = inject(SoundingSystem);
+  private light = inject(Light);
 
-  private raycaster: THREE.Raycaster = new THREE.Raycaster();
-  private mouse: THREE.Vector2 = new THREE.Vector2();
+  public enabled: boolean = true;
+  private isLightOn: boolean = true;
+
+  private scene!: THREE.Scene;
+  private camera!: THREE.Camera;
+  private raycaster = new THREE.Raycaster();
+  private mouse = new THREE.Vector2();
   private boxHelper!: THREE.BoxHelper;
 
   private interactableConfigs: InteractableConfig[] = [];
   private raycastTargets: THREE.Object3D[] = [];
-
-  private camera!: THREE.Camera;
-  private scene!: THREE.Scene;
   private hoveredObject: THREE.Object3D | null = null;
   private isInitialized = false;
 
-  public enabled: boolean = true;
-
-  private onMouseMoveBound = this.onMouseMove.bind(this);
-
   private onClickCallback?: (object: THREE.Object3D) => void;
+
+  private readonly onMouseMoveBound = this.onMouseMove.bind(this);
+  private readonly onClickBound = this.onClick.bind(this);
+
+  constructor() {
+    effect(() => {
+      this.isLightOn = this.light.lightState() === ThemeEnum.light;
+      if (!this.isLightOn) {
+        this.clearHover();
+      }
+    });
+  }
 
   public onObjectClick(callback: (object: THREE.Object3D) => void): void {
     this.onClickCallback = callback;
@@ -33,31 +46,68 @@ export class InteractiveObjects {
     this.scene = scene;
     this.camera = camera;
 
-    if (!this.isInitialized) {
-      this.boxHelper = new THREE.BoxHelper(new THREE.Object3D(), 0xffffff);
-      this.boxHelper.visible = false;
-      this.boxHelper.raycast = () => {};
+    if (this.isInitialized) return;
 
-      this.scene.add(this.boxHelper);
+    this.setupBoxHelper();
+    this.setupEventListeners();
 
-      window.addEventListener('mousemove', this.onMouseMoveBound);
-      window.addEventListener('click', () => {
-        if (this.hoveredObject && this.onClickCallback) {
-          this.onClickCallback(this.hoveredObject);
-        }
-      });
-      this.isInitialized = true;
-    }
-  }
-
-  private onMouseMove(event: MouseEvent): void {
-    this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    this.isInitialized = true;
   }
 
   public addObject(object: THREE.Object3D, distinct: boolean = true): void {
     this.interactableConfigs.push({ rootObject: object, distinct });
     this.raycastTargets.push(object);
+  }
+
+  public update(): void {
+    if (!this.isInitialized || !this.camera) return;
+
+    if (!this.enabled || !this.isLightOn) {
+      this.clearHover();
+      return;
+    }
+
+    this.raycaster.setFromCamera(this.mouse, this.camera);
+    const intersects = this.raycaster.intersectObjects(this.scene.children, true);
+
+    if (intersects.length === 0) {
+      this.clearHover();
+      return;
+    }
+
+    this.processIntersection(intersects[0].object);
+  }
+
+  private processIntersection(hitNode: THREE.Object3D): void {
+    const config = this.findConfigForHit(hitNode);
+
+    if (!config) {
+      this.clearHover();
+      return;
+    }
+
+    const targetToHighlight = config.distinct ? config.rootObject : hitNode;
+
+    if (this.hoveredObject !== targetToHighlight) {
+      this.applyHover(targetToHighlight);
+    }
+  }
+
+  private applyHover(target: THREE.Object3D): void {
+    this.hoveredObject = target;
+    this.boxHelper.setFromObject(this.hoveredObject);
+    this.boxHelper.update();
+    this.boxHelper.visible = true;
+    document.body.style.cursor = 'pointer';
+    this.sound.playHoverBlip();
+  }
+
+  private clearHover(): void {
+    if (!this.hoveredObject && (!this.boxHelper || !this.boxHelper.visible)) return;
+
+    this.hoveredObject = null;
+    if (this.boxHelper) this.boxHelper.visible = false;
+    document.body.style.cursor = 'default';
   }
 
   private findConfigForHit(hitObject: THREE.Object3D): InteractableConfig | undefined {
@@ -71,48 +121,26 @@ export class InteractiveObjects {
     return undefined;
   }
 
-  public update(): void {
-    if (!this.isInitialized || !this.camera) return;
-
-    this.raycaster.setFromCamera(this.mouse, this.camera);
-
-    const intersects = this.raycaster.intersectObjects(this.scene.children, true);
-
-    if (!this.enabled) {
-      this.clearHover();
-      return;
-    }
-
-    if (intersects.length > 0) {
-      const hitNode = intersects[0].object;
-
-      const config = this.findConfigForHit(hitNode);
-
-      if (config) {
-        const targetToHighlight = config.distinct ? config.rootObject : hitNode;
-
-        if (this.hoveredObject !== targetToHighlight) {
-          this.hoveredObject = targetToHighlight;
-
-          this.boxHelper.setFromObject(this.hoveredObject);
-          this.boxHelper.update();
-          this.boxHelper.visible = true;
-          document.body.style.cursor = 'pointer';
-          this.sound.playHoverBlip();
-        }
-      } else {
-        this.clearHover();
-      }
-    } else {
-      this.clearHover();
-    }
+  private setupBoxHelper(): void {
+    this.boxHelper = new THREE.BoxHelper(new THREE.Object3D(), 0xffffff);
+    this.boxHelper.visible = false;
+    this.boxHelper.raycast = () => {};
+    this.scene.add(this.boxHelper);
   }
 
-  private clearHover(): void {
-    if (this.hoveredObject || this.boxHelper.visible) {
-      this.hoveredObject = null;
-      this.boxHelper.visible = false;
-      document.body.style.cursor = 'default';
+  private setupEventListeners(): void {
+    window.addEventListener('mousemove', this.onMouseMoveBound);
+    window.addEventListener('click', this.onClickBound);
+  }
+
+  private onMouseMove(event: MouseEvent): void {
+    this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+  }
+
+  private onClick(): void {
+    if (this.hoveredObject && this.onClickCallback && this.enabled && this.isLightOn) {
+      this.onClickCallback(this.hoveredObject);
     }
   }
 
@@ -122,6 +150,8 @@ export class InteractiveObjects {
 
   public dispose(): void {
     window.removeEventListener('mousemove', this.onMouseMoveBound);
+    window.removeEventListener('click', this.onClickBound);
+
     this.interactableConfigs = [];
     this.raycastTargets = [];
     this.hoveredObject = null;

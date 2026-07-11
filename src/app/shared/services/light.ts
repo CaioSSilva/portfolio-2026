@@ -1,16 +1,13 @@
-import { Service } from '@angular/core';
+import { Service, signal } from '@angular/core';
 import { ThemeEnum } from '../interfaces/theme';
 
 @Service()
 export class Light {
-  private readonly storageKey = 'app-light';
+  lightState = signal<ThemeEnum>(ThemeEnum.light);
 
-  public getLight(): ThemeEnum {
-    const savedTheme = localStorage.getItem(this.storageKey);
-    return savedTheme === ThemeEnum.dark ? ThemeEnum.dark : ThemeEnum.light;
-  }
-
-  public toggleLight(): void {
-    
+  toggleLight() {
+    this.lightState.update((state) =>
+      state === ThemeEnum.light ? ThemeEnum.dark : ThemeEnum.light,
+    );
   }
 }

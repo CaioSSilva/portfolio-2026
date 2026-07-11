@@ -20,6 +20,11 @@
       "camera": "Camera",
       "help": "Ajuda"
     },
+
+    "info": {
+      "lightsOff": "Quem apagou a luz? Não consigo ver nada!",
+      "camera": "Cameras não filmam no escuro! Acenda a luz!"
+    },
     "helper": {
       "sceneTitle": "CENA 3D / CONTROLES",
       "sceneDesc": "Explore o ambiente tridimensional utilizando os comandos padrão de navegação:",

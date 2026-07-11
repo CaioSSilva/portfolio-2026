@@ -20,6 +20,10 @@
       "camera": "Camera",
       "help": "Help"
     },
+    "info": {
+      "lightsOff": "Who turned off the lights? I can't see a thing to interact with in the dark!",
+      "camera": "Cameras dont work well in the dark! Turn on the lights!"
+    },
     "helper": {
       "sceneTitle": "3D SCENE / CONTROLS",
       "sceneDesc": "Explore the three-dimensional environment using standard navigation commands:",

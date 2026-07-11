@@ -69,10 +69,16 @@
   >
     <div class="top-bar">
       <div class="tooltip-wrapper">
-        <button disabled (mouseenter)="audio.playNavHoverTick()">
-          <ng-icon size="16" name="heroLightBulb" />
+        <button (click)="light.toggleLight()" (mouseenter)="audio.playNavHoverTick()">
+          <ng-icon
+            size="16"
+            [name]="light.lightState() === lightStates.light ? 'heroBolt' : 'heroBoltSlash'"
+          />
         </button>
-        <span class="tooltip">{{ 'debug.unfinished' | translate }}</span>
+        <span class="tooltip">{{
+          (light.lightState() === lightStates.light ? 'menu.titles.light' : 'menu.info.lightsOff')
+            | translate
+        }}</span>
       </div>
       <div class="tooltip-wrapper">
         <button
@@ -92,7 +98,8 @@
           (click)="toggleControls()"
           [disabled]="
             cameraAnimations.state() === cameraStates.FOCUSED ||
-            cameraAnimations.state() === cameraStates.TRANSITIONING
+            cameraAnimations.state() === cameraStates.TRANSITIONING ||
+            light.lightState() === lightStates.dark
           "
         >
           <ng-icon
@@ -105,7 +112,10 @@
           />
         </button>
         <span class="tooltip">
-          {{ 'menu.titles.camera' | translate }}
+          {{
+            (light.lightState() === lightStates.light ? 'menu.titles.camera' : 'menu.info.camera')
+              | translate
+          }}
         </span>
       </div>
       <div class="tooltip-wrapper">
