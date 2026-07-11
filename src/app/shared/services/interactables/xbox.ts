@@ -4,11 +4,13 @@ import { InteractableFeature } from '../../interfaces/interactable';
 import { CameraAnimations } from '../camera-animations';
 import { InteractiveObjects } from '../interactive-objects';
 import { MonitorScreen } from '../monitor-screen';
+import { SoundingSystem } from '../sounding-system';
 
 @Service()
 export class Xbox extends InteractableFeature {
   private interactiveObjects = inject(InteractiveObjects);
   private monitorScreen = inject(MonitorScreen);
+  private sound = inject(SoundingSystem);
 
   public isXboxOn = this.monitorScreen.xboxIsOn;
 
@@ -18,11 +20,7 @@ export class Xbox extends InteractableFeature {
     return objectName === this.XBOX_NAME;
   }
 
-  setup(
-    scene: THREE.Scene,
-    _cameraAnimations: CameraAnimations,
-    _cssScene?: THREE.Scene
-  ): void {
+  setup(scene: THREE.Scene, _cameraAnimations: CameraAnimations, _cssScene?: THREE.Scene): void {
     const xbox = scene.getObjectByName(this.XBOX_NAME);
 
     if (xbox) {
@@ -30,11 +28,10 @@ export class Xbox extends InteractableFeature {
     }
   }
 
-  onClick(
-    _object: THREE.Object3D,
-    _cameraAnimations: CameraAnimations
-  ): void {
+  onClick(_object: THREE.Object3D, _cameraAnimations: CameraAnimations): void {
+    this.monitorScreen.xboxIsOn.set(true);
     this.monitorScreen.activeSource.set('xbox');
+    this.sound.playXboxChime('on');
   }
 
   returnToIdle(cameraAnimations: CameraAnimations): void {

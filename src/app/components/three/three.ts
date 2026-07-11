@@ -41,6 +41,7 @@ import { Pc } from '../../shared/services/interactables/pc';
 import { Xbox } from '../../shared/services/interactables/xbox';
 import { Light } from '../../shared/services/light';
 import { ThemeEnum } from '../../shared/interfaces/theme';
+import { MonitorScreen } from '../../shared/services/monitor-screen';
 
 @Component({
   selector: 'app-three',
@@ -79,6 +80,7 @@ export class Three implements AfterViewInit {
   private pc = inject(Pc);
   private xbox = inject(Xbox);
   private monitorInteraction = inject(Monitor);
+  private monitorScreen = inject(MonitorScreen);
   private zoomableInteraction = inject(Zoomable);
   public light = inject(Light);
 
@@ -221,6 +223,8 @@ export class Three implements AfterViewInit {
             child.material.color.setHex(0x050505);
             child.material.needsUpdate = true;
           }
+          this.pc.isTurnedOn.set(false);
+          this.xbox.isXboxOn.set(false);
         }
       }
     });

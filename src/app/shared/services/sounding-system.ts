@@ -41,16 +41,24 @@ export class SoundingSystem implements OnDestroy {
 
   public playUIStart(frequency: number = 440): void {
     if (this.audioContext && this.audioEnabled()) {
+      const time = this.audioContext.currentTime + 0.015; 
       const oscillator = this.audioContext.createOscillator();
       const gainNode = this.audioContext.createGain();
+      
       oscillator.type = 'sine';
       oscillator.frequency.value = frequency;
-      gainNode.gain.setValueAtTime(1, this.audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.5);
+      
+      gainNode.gain.setValueAtTime(0, time);
+      gainNode.gain.linearRampToValueAtTime(0.08, time + 0.05); 
+      gainNode.gain.exponentialRampToValueAtTime(0.001, time + 0.5);
+      gainNode.gain.linearRampToValueAtTime(0, time + 0.52);
+      
       oscillator.connect(gainNode);
       gainNode.connect(this.audioContext.destination);
-      oscillator.start();
-      oscillator.stop(this.audioContext.currentTime + 0.5);
+      
+      oscillator.start(time);
+      oscillator.stop(time + 0.55);
+      
       this.startClickMonitoring();
       this.bgMusicLoop();
     }
@@ -59,7 +67,7 @@ export class SoundingSystem implements OnDestroy {
   public playUIClick(): void {
     if (!this.audioContext || !this.audioEnabled()) return;
 
-    const time = this.audioContext.currentTime;
+    const time = this.audioContext.currentTime + 0.015;
 
     if (time - this.lastClickAt < this.clickDebounceSeconds) return;
     this.lastClickAt = time;
@@ -80,8 +88,9 @@ export class SoundingSystem implements OnDestroy {
     oscillator.frequency.exponentialRampToValueAtTime(220, time + 0.15);
 
     gainNode.gain.setValueAtTime(0, time);
-    gainNode.gain.linearRampToValueAtTime(0.12, time + 0.015);
+    gainNode.gain.linearRampToValueAtTime(0.06, time + 0.015);
     gainNode.gain.exponentialRampToValueAtTime(0.001, time + 0.15);
+    gainNode.gain.linearRampToValueAtTime(0, time + 0.17);
 
     sendGain.gain.setValueAtTime(0.05, time);
 
@@ -92,13 +101,13 @@ export class SoundingSystem implements OnDestroy {
     sendGain.connect(bus.delay);
 
     oscillator.start(time);
-    oscillator.stop(time + 0.15);
+    oscillator.stop(time + 0.2);
   }
 
   public playHoverBlip(): void {
     if (!this.audioContext || !this.audioEnabled()) return;
 
-    const time = this.audioContext.currentTime;
+    const time = this.audioContext.currentTime + 0.015;
 
     if (time - this.lastHoverAt < this.hoverDebounceSeconds) return;
     this.lastHoverAt = time;
@@ -119,8 +128,9 @@ export class SoundingSystem implements OnDestroy {
     oscillator.frequency.exponentialRampToValueAtTime(520, time + 0.06);
 
     gainNode.gain.setValueAtTime(0, time);
-    gainNode.gain.linearRampToValueAtTime(0.05, time + 0.01);
+    gainNode.gain.linearRampToValueAtTime(0.03, time + 0.01);
     gainNode.gain.exponentialRampToValueAtTime(0.001, time + 0.08);
+    gainNode.gain.linearRampToValueAtTime(0, time + 0.1);
 
     sendGain.gain.setValueAtTime(0.03, time);
 
@@ -131,13 +141,13 @@ export class SoundingSystem implements OnDestroy {
     sendGain.connect(bus.delay);
 
     oscillator.start(time);
-    oscillator.stop(time + 0.08);
+    oscillator.stop(time + 0.12);
   }
 
   public playNavHoverTick(): void {
     if (!this.audioContext || !this.audioEnabled()) return;
 
-    const time = this.audioContext.currentTime;
+    const time = this.audioContext.currentTime + 0.015;
 
     if (time - this.lastNavHoverAt < this.navHoverDebounceSeconds) return;
     this.lastNavHoverAt = time;
@@ -157,8 +167,9 @@ export class SoundingSystem implements OnDestroy {
     oscillator.frequency.setValueAtTime(300, time);
 
     gainNode.gain.setValueAtTime(0, time);
-    gainNode.gain.linearRampToValueAtTime(0.025, time + 0.008);
+    gainNode.gain.linearRampToValueAtTime(0.02, time + 0.008);
     gainNode.gain.exponentialRampToValueAtTime(0.001, time + 0.06);
+    gainNode.gain.linearRampToValueAtTime(0, time + 0.08);
 
     sendGain.gain.setValueAtTime(0.015, time);
 
@@ -169,14 +180,14 @@ export class SoundingSystem implements OnDestroy {
     sendGain.connect(bus.delay);
 
     oscillator.start(time);
-    oscillator.stop(time + 0.06);
+    oscillator.stop(time + 0.1);
   }
 
   public playAudioToggle(): void {
     if (!this.audioContext) return;
 
     const ctx = this.audioContext;
-    const time = ctx.currentTime;
+    const time = ctx.currentTime + 0.015;
     const bus = this.ensureAmbientBus();
 
     const duration = 0.22;
@@ -199,8 +210,9 @@ export class SoundingSystem implements OnDestroy {
     filter.Q.setValueAtTime(0.4, time);
 
     gainNode.gain.setValueAtTime(0, time);
-    gainNode.gain.linearRampToValueAtTime(0.08, time + duration * 0.3);
+    gainNode.gain.linearRampToValueAtTime(0.05, time + duration * 0.3);
     gainNode.gain.exponentialRampToValueAtTime(0.001, time + duration);
+    gainNode.gain.linearRampToValueAtTime(0, time + duration + 0.02);
 
     oscillator.connect(filter);
     filter.connect(gainNode);
@@ -215,7 +227,7 @@ export class SoundingSystem implements OnDestroy {
     if (!this.audioContext || !this.audioEnabled()) return;
 
     const ctx = this.audioContext;
-    const time = ctx.currentTime;
+    const time = ctx.currentTime + 0.015;
     const bus = this.ensureAmbientBus();
 
     const oscillator = ctx.createOscillator();
@@ -237,7 +249,7 @@ export class SoundingSystem implements OnDestroy {
     filter.Q.setValueAtTime(0.4, time);
 
     gainNode.gain.setValueAtTime(0, time);
-    gainNode.gain.linearRampToValueAtTime(0.045, time + durationSeconds * 0.4);
+    gainNode.gain.linearRampToValueAtTime(0.04, time + durationSeconds * 0.4); 
     gainNode.gain.linearRampToValueAtTime(0, time + durationSeconds);
 
     oscillator.connect(filter);
@@ -253,12 +265,12 @@ export class SoundingSystem implements OnDestroy {
     if (!this.audioContext || !this.audioEnabled()) return;
 
     const ctx = this.audioContext;
-    const time = ctx.currentTime;
+    const time = ctx.currentTime + 0.015;
     const bus = this.ensureAmbientBus();
 
-    const duration = state === 'on' ? 0.5 : 0.35;
-    const startFreq = state === 'on' ? 110 : 330;
-    const endFreq = state === 'on' ? 330 : 90;
+    const duration = state === 'on' ? 0.6 : 0.4;
+    const startFreq = state === 'on' ? 80 : 120;
+    const endFreq = state === 'on' ? 200 : 40;
 
     const oscillator = ctx.createOscillator();
     const gainNode = ctx.createGain();
@@ -269,12 +281,19 @@ export class SoundingSystem implements OnDestroy {
     oscillator.frequency.exponentialRampToValueAtTime(endFreq, time + duration);
 
     filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(1200, time);
+    filter.frequency.setValueAtTime(600, time);
     filter.Q.setValueAtTime(0.5, time);
 
     gainNode.gain.setValueAtTime(0, time);
-    gainNode.gain.linearRampToValueAtTime(0.09, time + duration * 0.25);
+
+    if (state === 'on') {
+      gainNode.gain.linearRampToValueAtTime(0.06, time + duration * 0.4);
+    } else {
+      gainNode.gain.linearRampToValueAtTime(0.03, time + 0.02);
+    }
+
     gainNode.gain.exponentialRampToValueAtTime(0.001, time + duration);
+    gainNode.gain.linearRampToValueAtTime(0, time + duration + 0.02);
 
     oscillator.connect(filter);
     filter.connect(gainNode);
@@ -289,28 +308,35 @@ export class SoundingSystem implements OnDestroy {
     if (!this.audioContext || !this.audioEnabled()) return;
 
     const ctx = this.audioContext;
-    const time = ctx.currentTime;
+    const time = ctx.currentTime + 0.015;
     const bus = this.ensureAmbientBus();
 
-    const duration = 0.12; 
-    const startFreq = state === 'on' ? 400 : 900;
-    const endFreq = state === 'on' ? 1200 : 250;
+    const duration = state === 'on' ? 0.15 : 0.25;
+    const startFreq = state === 'on' ? 400 : 500;
+    const endFreq = state === 'on' ? 1200 : 100;
 
     const oscillator = ctx.createOscillator();
     const gainNode = ctx.createGain();
     const filter = ctx.createBiquadFilter();
 
-    oscillator.type = 'square';
+    oscillator.type = 'triangle';
     oscillator.frequency.setValueAtTime(startFreq, time);
     oscillator.frequency.exponentialRampToValueAtTime(endFreq, time + duration);
 
     filter.type = 'bandpass';
-    filter.frequency.setValueAtTime(state === 'on' ? 1000 : 400, time);
+    filter.frequency.setValueAtTime(state === 'on' ? 1000 : 300, time);
     filter.Q.setValueAtTime(1.2, time);
 
     gainNode.gain.setValueAtTime(0, time);
-    gainNode.gain.linearRampToValueAtTime(0.06, time + 0.015);
+
+    if (state === 'on') {
+      gainNode.gain.linearRampToValueAtTime(0.05, time + 0.02); 
+    } else {
+      gainNode.gain.linearRampToValueAtTime(0.025, time + 0.06); 
+    }
+
     gainNode.gain.exponentialRampToValueAtTime(0.001, time + duration);
+    gainNode.gain.linearRampToValueAtTime(0, time + duration + 0.02);
 
     const sendGain = ctx.createGain();
     sendGain.gain.setValueAtTime(0.02, time);
@@ -318,7 +344,7 @@ export class SoundingSystem implements OnDestroy {
     oscillator.connect(filter);
     filter.connect(gainNode);
     gainNode.connect(ctx.destination);
-    
+
     gainNode.connect(sendGain);
     sendGain.connect(bus.delay);
 
@@ -330,7 +356,7 @@ export class SoundingSystem implements OnDestroy {
     if (!this.audioContext || !this.audioEnabled()) return;
 
     const ctx = this.audioContext;
-    const time = ctx.currentTime;
+    const time = ctx.currentTime + 0.015;
     const bus = this.ensureAmbientBus();
 
     const pitchJitter = Math.random() * 300 - 150;
@@ -351,8 +377,9 @@ export class SoundingSystem implements OnDestroy {
     filter.Q.setValueAtTime(1.5, time);
 
     gainNode.gain.setValueAtTime(0, time);
-    gainNode.gain.linearRampToValueAtTime(0.07, time + 0.003);
+    gainNode.gain.linearRampToValueAtTime(0.03, time + 0.003);
     gainNode.gain.exponentialRampToValueAtTime(0.001, time + duration);
+    gainNode.gain.linearRampToValueAtTime(0, time + duration + 0.01);
 
     const sendGain = ctx.createGain();
     sendGain.gain.setValueAtTime(0.008, time);
@@ -360,7 +387,7 @@ export class SoundingSystem implements OnDestroy {
     oscillator.connect(filter);
     filter.connect(gainNode);
     gainNode.connect(ctx.destination);
-    
+
     gainNode.connect(sendGain);
     sendGain.connect(bus.delay);
 
@@ -385,7 +412,7 @@ export class SoundingSystem implements OnDestroy {
         ? coreNotes[Math.floor(Math.random() * coreNotes.length)]
         : scale[Math.floor(Math.random() * scale.length)];
 
-      const now = ctx.currentTime;
+      const now = ctx.currentTime + 0.05;
       const noteDuration = 5 + Math.random() * 4;
       const attack = 1.8 + Math.random() * 1.2;
 
@@ -399,8 +426,9 @@ export class SoundingSystem implements OnDestroy {
       panner.pan.setValueAtTime(Math.random() * 1.4 - 0.7, now);
 
       gainNode.gain.setValueAtTime(0, now);
-      gainNode.gain.linearRampToValueAtTime(0.04, now + attack);
+      gainNode.gain.linearRampToValueAtTime(0.035, now + attack);
       gainNode.gain.exponentialRampToValueAtTime(0.001, now + noteDuration);
+      gainNode.gain.linearRampToValueAtTime(0, now + noteDuration + 0.1);
 
       [0, 5].forEach((detune) => {
         const osc = ctx.createOscillator();
@@ -409,7 +437,7 @@ export class SoundingSystem implements OnDestroy {
         osc.detune.setValueAtTime(detune, now);
         osc.connect(filter);
         osc.start(now);
-        osc.stop(now + noteDuration);
+        osc.stop(now + noteDuration + 0.15);
       });
 
       filter.connect(gainNode);
@@ -457,5 +485,52 @@ export class SoundingSystem implements OnDestroy {
     if (this.audioContext && this.audioContext.state !== 'closed') {
       this.audioContext.close();
     }
+  }
+
+  public playXboxChime(state: 'on' | 'off'): void {
+    if (!this.audioContext || !this.audioEnabled()) return;
+
+    const ctx = this.audioContext;
+    const time = ctx.currentTime + 0.015;
+    const bus = this.ensureAmbientBus();
+
+    const notesOn = [329.63, 415.30, 493.88];
+    const notesOff = [493.88, 415.30, 329.63];
+    const notes = state === 'on' ? notesOn : notesOff;
+
+    notes.forEach((freq, index) => {
+      const startTime = time + index * 0.06;
+      const duration = 0.4;
+
+      const osc1 = ctx.createOscillator();
+      const osc2 = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+
+      osc1.type = 'sine';
+      osc2.type = 'sine';
+
+      osc1.frequency.setValueAtTime(freq, startTime);
+      osc2.frequency.setValueAtTime(freq, startTime);
+      osc2.detune.setValueAtTime(6, startTime);
+
+      gainNode.gain.setValueAtTime(0, startTime);
+      gainNode.gain.linearRampToValueAtTime(0.03, startTime + 0.04);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+      gainNode.gain.linearRampToValueAtTime(0, startTime + duration + 0.02);
+
+      const sendGain = ctx.createGain();
+      sendGain.gain.setValueAtTime(0.02, startTime);
+
+      osc1.connect(gainNode);
+      osc2.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      gainNode.connect(sendGain);
+      sendGain.connect(bus.delay);
+
+      osc1.start(startTime);
+      osc2.start(startTime);
+      osc1.stop(startTime + duration + 0.05);
+      osc2.stop(startTime + duration + 0.05);
+    });
   }
 }

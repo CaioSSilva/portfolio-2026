@@ -15,15 +15,15 @@
   },
   "menu": {
     "titles": {
-      "light": "Luzes",
+      "energy": "Energia",
       "sound": "Sons",
       "camera": "Camera",
       "help": "Ajuda"
     },
 
     "info": {
-      "lightsOff": "Quem apagou a luz? Não consigo ver nada!",
-      "camera": "Cameras não filmam no escuro! Acenda a luz!"
+      "lightsOff": "Quem desligou a energia? Não consigo ver nada!",
+      "camera": "Cameras não filmam no escuro! Ligue a energia!"
     },
     "helper": {
       "sceneTitle": "CENA 3D / CONTROLES",
@@ -44,9 +44,7 @@
       "bugButton": "Reportar Bug no GitHub"
     }
   },
-  "debug": {
-    "unfinished": "Função em desenvolvimento!"
-  },
+
   "interactive": {
     "mecha": {
       "title": "D.Va Tokki MEKA",

@@ -18,8 +18,7 @@ export class MonitorScreen {
 
     if (source === 'pc' && pcOn) return this.PC_URL;
     if (source === 'xbox' && xboxOn) return this.XBOX_URL;
-    if (pcOn) return this.PC_URL;
-    if (xboxOn) return this.XBOX_URL;
+  
     return '';
   });
 

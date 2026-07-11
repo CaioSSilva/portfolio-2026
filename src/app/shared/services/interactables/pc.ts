@@ -17,11 +17,7 @@ export class Pc extends InteractableFeature implements OnDestroy {
   private model: THREE.Scene | null = null;
   private fanTweens: gsap.core.Tween[] = [];
 
-  private readonly fanNames = [
-    'Fan_Gpu_1',
-    'Fan_Gpu_2',
-    'Fan_Gpu_3'
-  ];
+  private readonly fanNames = ['Fan_Gpu_1', 'Fan_Gpu_2', 'Fan_Gpu_3'];
 
   private readonly PC_NAME = 'PC';
 
@@ -31,11 +27,7 @@ export class Pc extends InteractableFeature implements OnDestroy {
     return objectName === this.PC_NAME;
   }
 
-  setup(
-    scene: THREE.Scene,
-    _cameraAnimations: CameraAnimations,
-    _cssScene?: THREE.Scene
-  ): void {
+  setup(scene: THREE.Scene, _cameraAnimations: CameraAnimations, _cssScene?: THREE.Scene): void {
     this.model = scene;
 
     const pcMesh = scene.getObjectByName(this.PC_NAME);
@@ -46,10 +38,7 @@ export class Pc extends InteractableFeature implements OnDestroy {
     }
   }
 
-  onClick(
-    _object: THREE.Object3D,
-    _cameraAnimations: CameraAnimations
-  ): void {
+  onClick(_object: THREE.Object3D, _cameraAnimations: CameraAnimations): void {
     const isOn = this.isTurnedOn();
     const isShowingPc = this.monitorScreen.activeSource() === 'pc';
 
@@ -58,7 +47,6 @@ export class Pc extends InteractableFeature implements OnDestroy {
         this.monitorScreen.activeSource.set('pc');
       } else {
         this.togglePower();
-        this.monitorScreen.activeSource.set('xbox');
       }
     } else {
       this.togglePower();
@@ -78,9 +66,9 @@ export class Pc extends InteractableFeature implements OnDestroy {
     this.sound.playMonitorPower(newState ? 'on' : 'off');
 
     if (newState) {
-      this.fanTweens.forEach(t => t.play());
+      this.fanTweens.forEach((t) => t.play());
     } else {
-      this.fanTweens.forEach(t => t.pause());
+      this.fanTweens.forEach((t) => t.pause());
     }
   }
 
@@ -89,7 +77,7 @@ export class Pc extends InteractableFeature implements OnDestroy {
 
     this.clearTweens();
 
-    this.fanNames.forEach(name => {
+    this.fanNames.forEach((name) => {
       const fan = this.model!.getObjectByName(name);
 
       if (!fan) return;
@@ -107,7 +95,7 @@ export class Pc extends InteractableFeature implements OnDestroy {
   }
 
   private clearTweens(): void {
-    this.fanTweens.forEach(t => t.kill());
+    this.fanTweens.forEach((t) => t.kill());
     this.fanTweens = [];
   }
 
