@@ -20,31 +20,33 @@
       "camera": "Camera",
       "help": "Ajuda"
     },
-
     "info": {
       "lightsOff": "Quem desligou a energia? Não consigo ver nada!",
       "camera": "Cameras não filmam no escuro! Ligue a energia!"
     },
     "helper": {
-      "sceneTitle": "CENA 3D / CONTROLES",
-      "sceneDesc": "Explore o ambiente tridimensional utilizando os comandos padrão de navegação:",
-      "controlRotate": "Rotacionar",
-      "controlRotateDesc": "Clique esquerdo + Arrastar",
-      "controlPan": "Pan (Mover Câmera)",
-      "controlPanDesc": "Clique direito + Arrastar",
-      "controlZoom": "Zoom",
-      "controlZoomDesc": "Scroll do mouse",
-      "tip": "💡 Dica: Caso se perca enquanto move a cena, você sempre poderá usar o botão da camera para recomeçar!",
-      "interactTitle": "OBJETOS INTERATIVOS",
-      "interactDesc": "Alguns elementos da cena reagem às suas ações. Passe o mouse sobre o cenário para descobrir pontos de interesse:",
-      "interactOutline": "Efeito de Borda (Outline)",
-      "interactOutlineDesc": "Quando um objeto ganha uma borda iluminada em destaque, significa que ele é interativo e pode ser clicado para acionar eventos.",
+      "step1Title": "Domine a Câmera",
+      "step1Desc": "Clique esquerdo e arraste para rotacionar o quarto. Clique direito e arraste para mover a câmera (pan). Use o scroll do mouse para dar zoom.",
+      "step2Title": "Procure pelo Contorno",
+      "step2Desc": "Passe o mouse sobre objetos como o Monitor, PC ou Xbox. Quando eles ganharem um contorno branco iluminado, clique para interagir!",
+      "step3Title": "Controle o Ambiente",
+      "step3Desc": "Use o menu superior esquerdo para ligar/desligar a energia, ativar os efeitos sonoros ou mudar para a câmera livre em primeira pessoa.",
+      "step4Title": "Retornando à Visão",
+      "step4Desc": "Sempre que você der zoom em um objeto ou tela, clique fora dele ou pressione X para retornar à visão padrão do quarto.",
       "bugTitle": "ENCONTROU UM BUG?",
       "bugDesc": "Este projeto é de código aberto. Se algo não estiver funcionando como deveria, abra uma Issue detalhando o problema no repositório oficial.",
-      "bugButton": "Reportar Bug no GitHub"
+      "bugButton": "Reportar Bug no GitHub",
+      "step1ExtraTitle": "DICA DE CÂMERA",
+      "step1ExtraDesc": "Caso se perca enquanto move a cena, você pode usar o botão da câmera para recomeçar!",
+      "step1ExtraButton": "Resetar Câmera",
+      "step2ExtraTitle": "SEGREDOS OCULTOS",
+      "step2ExtraDesc": "Alguns objetos disparam animações especiais ou mudanças quando interagidos.",
+      "step2ExtraButton": "Explorar",
+      "step3ExtraTitle": "MODO IMERSÃO",
+      "step3ExtraDesc": "Combine o modo escuro com os efeitos sonoros para uma experiência mais atmosférica.",
+      "step3ExtraButton": "Experimentar"
     }
   },
-
   "interactive": {
     "mecha": {
       "title": "D.Va Tokki MEKA",

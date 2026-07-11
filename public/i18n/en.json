@@ -25,25 +25,28 @@
       "camera": "Cameras dont work well in the dark! Turn on the energy!"
     },
     "helper": {
-      "sceneTitle": "3D SCENE / CONTROLS",
-      "sceneDesc": "Explore the three-dimensional environment using standard navigation commands:",
-      "controlRotate": "Rotate",
-      "controlRotateDesc": "Left click + Drag",
-      "controlPan": "Pan (Move Camera)",
-      "controlPanDesc": "Right click + Drag",
-      "controlZoom": "Zoom",
-      "controlZoomDesc": "Mouse scroll",
-      "tip": "💡 Tip: If you get lost while moving the scene, you can always use the camera button to start over!",
-      "interactTitle": "INTERACTIVE OBJECTS",
-      "interactDesc": "Certain elements within the scene react to your actions. Hover your cursor over the environment to discover points of interest:",
-      "interactOutline": "Outline Effect",
-      "interactOutlineDesc": "When an object displays a glowing highlighted border, it indicates it is interactive and can be clicked to trigger events.",
+      "step1Title": "Master the Camera",
+      "step1Desc": "Left-click and drag to rotate the room. Right-click and drag to pan. Scroll your mouse wheel to zoom in and out.",
+      "step2Title": "Look for the Outline",
+      "step2Desc": "Hover over objects like the Monitor, PC, or Xbox. When they highlight with a white outline, click them to interact!",
+      "step3Title": "Control the Environment",
+      "step3Desc": "Use the top-left menu to toggle the lights, enable/disable sound effects, or switch to a free-roaming first-person camera.",
+      "step4Title": "Returning to View",
+      "step4Desc": "Whenever you zoom into an object or screen, click outside of it or press X to return to the default room view.",
       "bugTitle": "FOUND A BUG?",
       "bugDesc": "This project is open source. If something isn't working as expected, open an Issue detailing the problem in the official repository.",
-      "bugButton": "Report Bug on GitHub"
+      "bugButton": "Report Bug on GitHub",
+      "step1ExtraTitle": "CAMERA TIP",
+      "step1ExtraDesc": "If you get lost while moving the scene, you can always use the camera button to start over!",
+      "step1ExtraButton": "Reset Camera",
+      "step2ExtraTitle": "HIDDEN SECRETS",
+      "step2ExtraDesc": "Some objects trigger special animations or changes when interacted with.",
+      "step2ExtraButton": "Explore",
+      "step3ExtraTitle": "IMMERSION MODE",
+      "step3ExtraDesc": "Combine the dark mode with sound effects for the best atmospheric experience.",
+      "step3ExtraButton": "Try it out"
     }
   },
-
   "interactive": {
     "mecha": {
       "title": "D.Va Tokki MEKA",

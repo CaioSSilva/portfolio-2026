@@ -1,0 +1,118 @@
+@if (isOpen()) {
+  <div class="helper-wrapper">
+    <div class="helper">
+      <div class="helper-header">
+        <span class="helper-title">{{ 'menu.titles.help' | translate }}</span>
+        <button (click)="closeHelper()" class="helper-close">
+          <ng-icon size="16" name="heroXMark" />
+        </button>
+      </div>
+
+      <div class="stepper-viewport">
+        <div class="stepper-track" [style.transform]="'translateX(-' + currentStep() * 100 + '%)'">
+          <div class="step-slide" [class.active]="currentStep() === 0">
+            <div class="step-content">
+              <div class="step-badge">Step 1</div>
+              <h3>{{ 'menu.helper.step1Title' | translate }}</h3>
+              <p>{{ 'menu.helper.step1Desc' | translate }}</p>
+
+              <hr class="helper-divider" />
+
+              <section class="step-extra">
+                <h4>{{ 'menu.helper.step1ExtraTitle' | translate }}</h4>
+                <p>{{ 'menu.helper.step1ExtraDesc' | translate }}</p>
+                <div class="action-link" (click)="closeHelper(); cameraInteraction.startIdle()">
+                  <ng-icon name="heroVideoCamera" size="16" />
+                  {{ 'menu.helper.step1ExtraButton' | translate }}
+                </div>
+              </section>
+            </div>
+          </div>
+
+          <div class="step-slide" [class.active]="currentStep() === 1">
+            <div class="step-content">
+              <div class="step-badge">Step 2</div>
+              <h3>{{ 'menu.helper.step2Title' | translate }}</h3>
+              <p>{{ 'menu.helper.step2Desc' | translate }}</p>
+
+              <hr class="helper-divider" />
+
+              <section class="step-extra">
+                <h4>{{ 'menu.helper.step2ExtraTitle' | translate }}</h4>
+                <p>{{ 'menu.helper.step2ExtraDesc' | translate }}</p>
+                <div class="action-link" (click)="close.emit()">
+                  <ng-icon name="heroBolt" size="16" />
+                  {{ 'menu.helper.step2ExtraButton' | translate }}
+                </div>
+              </section>
+            </div>
+          </div>
+
+          <div class="step-slide" [class.active]="currentStep() === 2">
+            <div class="step-content">
+              <div class="step-badge">Step 3</div>
+              <h3>{{ 'menu.helper.step3Title' | translate }}</h3>
+              <p>{{ 'menu.helper.step3Desc' | translate }}</p>
+
+              <hr class="helper-divider" />
+
+              <section class="step-extra">
+                <h4>{{ 'menu.helper.step3ExtraTitle' | translate }}</h4>
+                <p>{{ 'menu.helper.step3ExtraDesc' | translate }}</p>
+                <div class="action-link" (click)="close.emit()">
+                  <ng-icon name="heroSpeakerWave" size="16" />
+                  {{ 'menu.helper.step3ExtraButton' | translate }}
+                </div>
+              </section>
+            </div>
+          </div>
+
+          <div class="step-slide" [class.active]="currentStep() === 3">
+            <div class="step-content">
+              <div class="step-badge">Step 4</div>
+              <h3>{{ 'menu.helper.step4Title' | translate }}</h3>
+              <p>{{ 'menu.helper.step4Desc' | translate }}</p>
+
+              <hr class="helper-divider" />
+
+              <section class="step-extra">
+                <h4>{{ 'menu.helper.bugTitle' | translate }}</h4>
+                <p>{{ 'menu.helper.bugDesc' | translate }}</p>
+                <a
+                  href="https://github.com/CaioSSilva/portfolio-2026/issues"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="action-link"
+                >
+                  <ng-icon name="heroBugAnt" size="16" />
+                  {{ 'menu.helper.bugButton' | translate }}
+                </a>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="helper-footer">
+        <button class="nav-btn" (click)="prevStep()" [disabled]="currentStep() === 0">
+          <ng-icon name="heroChevronLeft" size="20" />
+        </button>
+
+        <div class="indicators">
+          @for (step of [0, 1, 2, 3]; track step) {
+            <button
+              class="dot"
+              [class.active]="currentStep() === step"
+              (click)="setStep(step)"
+              [attr.aria-label]="'Go to step ' + (step + 1)"
+            ></button>
+          }
+        </div>
+
+        <button class="nav-btn" (click)="nextStep()" [disabled]="currentStep() === totalSteps - 1">
+          <ng-icon name="heroChevronRight" size="20" />
+        </button>
+      </div>
+    </div>
+  </div>
+}

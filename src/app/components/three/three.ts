@@ -7,6 +7,7 @@ import {
   inject,
   effect,
   untracked,
+  signal,
 } from '@angular/core';
 import * as THREE from 'three';
 import { ThreeApplication } from '../../shared/services/three-application';
@@ -22,8 +23,6 @@ import {
   heroQuestionMarkCircle,
   heroVideoCamera,
   heroVideoCameraSlash,
-  heroXMark,
-  heroBugAnt,
   heroBolt,
   heroBoltSlash,
 } from '@ng-icons/heroicons/outline';
@@ -41,14 +40,14 @@ import { Pc } from '../../shared/services/interactables/pc';
 import { Xbox } from '../../shared/services/interactables/xbox';
 import { Light } from '../../shared/services/light';
 import { ThemeEnum } from '../../shared/interfaces/theme';
-import { MonitorScreen } from '../../shared/services/monitor-screen';
+import { Helper } from '../helper/helper';
 
 @Component({
   selector: 'app-three',
   standalone: true,
   templateUrl: './three.html',
   styleUrls: ['./three.css'],
-  imports: [NgIcon, Loading, TranslatePipe, ZoomableOverlay],
+  imports: [NgIcon, Loading, TranslatePipe, ZoomableOverlay, Helper],
   providers: [
     provideIcons({
       heroBolt,
@@ -58,8 +57,6 @@ import { MonitorScreen } from '../../shared/services/monitor-screen';
       heroQuestionMarkCircle,
       heroVideoCamera,
       heroVideoCameraSlash,
-      heroXMark,
-      heroBugAnt,
     }),
   ],
 })
@@ -80,7 +77,6 @@ export class Three implements AfterViewInit {
   private pc = inject(Pc);
   private xbox = inject(Xbox);
   private monitorInteraction = inject(Monitor);
-  private monitorScreen = inject(MonitorScreen);
   private zoomableInteraction = inject(Zoomable);
   public light = inject(Light);
 
@@ -101,6 +97,8 @@ export class Three implements AfterViewInit {
   ) {
     effect(() => this.handleThemeChange());
   }
+
+  public isHelperOpen = signal(false);
 
   async ngAfterViewInit() {
     this.setupListeners();
@@ -261,8 +259,7 @@ export class Three implements AfterViewInit {
   }
 
   public toggleHelper() {
-    const displayStyle = this.helperWrapper.nativeElement.style.display;
-    this.helperWrapper.nativeElement.style.display = displayStyle !== 'flex' ? 'flex' : 'none';
+    this.isHelperOpen.update(val => !val);
   }
 
   private setupCleanup() {
