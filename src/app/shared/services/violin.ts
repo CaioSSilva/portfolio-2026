@@ -48,6 +48,7 @@ export class Violin {
   public show() {
     this.isVisible.set(true);
     this.audio.audioEnabled.set(false);
+    this.audio.stopBgMusic();
     this.initAudio();
     this.attachListeners();
   }
@@ -55,6 +56,7 @@ export class Violin {
   public hide() {
     this.isVisible.set(false);
     this.audio.audioEnabled.set(true);
+    this.audio.bgMusicLoop();
     this.stopNote();
     this.removeListeners();
     this.stopRecording();
@@ -124,12 +126,7 @@ export class Violin {
     }
   }
 
-  public updateBowIntensity(
-    velocityY: number,
-    shiftKey = false,
-    positionX?: number,
-    mouseDx = 0,
-  ) {
+  public updateBowIntensity(velocityY: number, shiftKey = false, positionX?: number, mouseDx = 0) {
     const currentKey = this.activeKey();
     if (!currentKey || !this.ctx) return;
     const voice = this.voices.get(currentKey);
@@ -153,7 +150,7 @@ export class Violin {
     const currentKey = this.activeKey();
     if (currentKey) this.releaseNote(currentKey);
     this.bowPhysics.update((p) => ({ ...p, velocity: 0 }));
-    
+
     if (this.ctx && this.bowNoise) {
       this.bowNoise.updateIntensity(0, 0, this.ctx.currentTime);
     }

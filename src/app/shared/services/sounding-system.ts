@@ -41,24 +41,24 @@ export class SoundingSystem implements OnDestroy {
 
   public playUIStart(frequency: number = 440): void {
     if (this.audioContext && this.audioEnabled()) {
-      const time = this.audioContext.currentTime + 0.015; 
+      const time = this.audioContext.currentTime + 0.015;
       const oscillator = this.audioContext.createOscillator();
       const gainNode = this.audioContext.createGain();
-      
+
       oscillator.type = 'sine';
       oscillator.frequency.value = frequency;
-      
+
       gainNode.gain.setValueAtTime(0, time);
-      gainNode.gain.linearRampToValueAtTime(0.08, time + 0.05); 
+      gainNode.gain.linearRampToValueAtTime(0.08, time + 0.05);
       gainNode.gain.exponentialRampToValueAtTime(0.001, time + 0.5);
       gainNode.gain.linearRampToValueAtTime(0, time + 0.52);
-      
+
       oscillator.connect(gainNode);
       gainNode.connect(this.audioContext.destination);
-      
+
       oscillator.start(time);
       oscillator.stop(time + 0.55);
-      
+
       this.startClickMonitoring();
       this.bgMusicLoop();
     }
@@ -249,7 +249,7 @@ export class SoundingSystem implements OnDestroy {
     filter.Q.setValueAtTime(0.4, time);
 
     gainNode.gain.setValueAtTime(0, time);
-    gainNode.gain.linearRampToValueAtTime(0.04, time + durationSeconds * 0.4); 
+    gainNode.gain.linearRampToValueAtTime(0.04, time + durationSeconds * 0.4);
     gainNode.gain.linearRampToValueAtTime(0, time + durationSeconds);
 
     oscillator.connect(filter);
@@ -330,9 +330,9 @@ export class SoundingSystem implements OnDestroy {
     gainNode.gain.setValueAtTime(0, time);
 
     if (state === 'on') {
-      gainNode.gain.linearRampToValueAtTime(0.05, time + 0.02); 
+      gainNode.gain.linearRampToValueAtTime(0.05, time + 0.02);
     } else {
-      gainNode.gain.linearRampToValueAtTime(0.025, time + 0.06); 
+      gainNode.gain.linearRampToValueAtTime(0.025, time + 0.06);
     }
 
     gainNode.gain.exponentialRampToValueAtTime(0.001, time + duration);
@@ -394,6 +394,13 @@ export class SoundingSystem implements OnDestroy {
     oscillator.start(time);
     oscillator.stop(time + duration + 0.02);
   }
+  
+  public stopBgMusic(): void {
+    if (this.bgIntervalId) {
+      this.windowObj.clearTimeout(this.bgIntervalId);
+      this.bgIntervalId = undefined;
+    }
+  }
 
   public bgMusicLoop(): void {
     if (!this.audioContext || !this.audioEnabled() || this.bgIntervalId) {
@@ -405,7 +412,10 @@ export class SoundingSystem implements OnDestroy {
     const bus = this.ensureAmbientBus();
 
     const scheduleNote = () => {
-      if (!this.audioContext || !this.audioEnabled()) return;
+      if (!this.audioContext || !this.audioEnabled()) {
+        this.bgIntervalId = undefined;
+        return;
+      }
 
       const isCore = Math.random() < 0.35;
       const freq = isCore
@@ -494,8 +504,8 @@ export class SoundingSystem implements OnDestroy {
     const time = ctx.currentTime + 0.015;
     const bus = this.ensureAmbientBus();
 
-    const notesOn = [329.63, 415.30, 493.88];
-    const notesOff = [493.88, 415.30, 329.63];
+    const notesOn = [329.63, 415.3, 493.88];
+    const notesOff = [493.88, 415.3, 329.63];
     const notes = state === 'on' ? notesOn : notesOff;
 
     notes.forEach((freq, index) => {
