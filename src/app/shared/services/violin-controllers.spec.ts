@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { ViolinUi } from './violin-ui';
+import { ViolinControllers } from './violin-controllers';
 
-describe('ViolinUi', () => {
-  let service: ViolinUi;
+describe('ViolinControllers', () => {
+  let service: ViolinControllers;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(ViolinUi);
+    service = TestBed.inject(ViolinControllers);
   });
 
   it('should be created', () => {

@@ -80,5 +80,42 @@
       "title": "PlayStation 2",
       "desc": "The best-selling home console of all time. A true legend in video game history that defined an entire generation of players with a vast and unforgettable library of classics."
     }
+  },
+  "violinUi": {
+    "recording": {
+      "record": "Record",
+      "stop": "Stop Recording",
+      "download": "Download Audio",
+      "close": "Close"
+    },
+    "manual": {
+      "title": "How to Play",
+      "keys": {
+        "label": "1 to 4",
+        "desc": "Hold to select a string."
+      },
+      "bow": {
+        "label": "↕ Mouse Y",
+        "desc": "Move to bow. Sound depends on movement speed."
+      },
+      "position": {
+        "label": "↔ Mouse X",
+        "desc": "Changes bowing position (Tasto/Ponticello)."
+      },
+      "pressure": {
+        "label": "🖱️ Click",
+        "desc": "Hold to add bow pressure (increases harmonics and noise)."
+      },
+      "glissando": {
+        "label": "⇧ Shift + Mouse X ↔",
+        "desc": "Slide finger along the fingerboard (Glissando)."
+      }
+    },
+    "strings": {
+      "g": "G String",
+      "d": "D String",
+      "a": "A String",
+      "e": "E String"
+    }
   }
 }

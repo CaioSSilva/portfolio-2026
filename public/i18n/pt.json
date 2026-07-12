@@ -80,5 +80,42 @@
       "title": "PlayStation 2",
       "desc": "O console de mesa mais vendido de todos os tempos. Uma verdadeira lenda da história dos videogames que definiu uma geração inteira de jogadores com uma biblioteca vasta e inesquecível de clássicos."
     }
+  },
+  "violinUi": {
+    "recording": {
+      "record": "Gravar",
+      "stop": "Parar Gravação",
+      "download": "Baixar Áudio",
+      "close": "Fechar"
+    },
+    "manual": {
+      "title": "Como Tocar",
+      "keys": {
+        "label": "1 a 4",
+        "desc": "Segure para escolher a corda."
+      },
+      "bow": {
+        "label": "↕ Mouse Y",
+        "desc": "Mova para passar o arco. O som depende do movimento."
+      },
+      "position": {
+        "label": "↔ Mouse X",
+        "desc": "Muda a posição do arco (Tasto/Ponticello)."
+      },
+      "pressure": {
+        "label": "🖱️ Clique",
+        "desc": "Segure para botar pressão no arco (mais harmônicos e ruído)."
+      },
+      "glissando": {
+        "label": "⇧ Shift + Mouse X ↔",
+        "desc": "Desliza o dedo no braço (Glissando)."
+      }
+    },
+    "strings": {
+      "g": "Sol",
+      "d": "Ré",
+      "a": "Lá",
+      "e": "Mi"
+    }
   }
 }

@@ -1,11 +1,27 @@
 import { Component, inject } from '@angular/core';
-import { ViolinUi as violin } from '../../shared/services/violin-ui';
+import { Violin } from '../../shared/services/violin';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { heroDocumentArrowDown, heroStop, heroXMark } from '@ng-icons/heroicons/outline';
+import { ViolinFocus } from '../../shared/services/interactables/violin-focus';
+import { CameraAnimations } from '../../shared/services/camera-animations';
+import { TranslatePipe } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-violin-ui',
-  imports: [],
+  standalone: true,
+  imports: [NgIcon, TranslatePipe],
+  providers: [
+    provideIcons({
+      heroXMark,
+      heroStop,
+      heroDocumentArrowDown,
+    }),
+  ],
   templateUrl: './violin-ui.html',
   styleUrl: './violin-ui.css',
 })
 export class ViolinUi {
-  violinUi = inject(violin);
+  public violin = inject(Violin);
+  public violinFocus = inject(ViolinFocus);
+  public cameraAnim = inject(CameraAnimations);
 }

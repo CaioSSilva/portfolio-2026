@@ -5,7 +5,7 @@ import { InteractableFeature } from '../../interfaces/interactable';
 import { CameraAnimations } from '../camera-animations';
 import { InteractiveObjects } from '../interactive-objects';
 import { CameraStates } from '../../interfaces/camera';
-import { ViolinUi } from '../violin-ui';
+import { Violin } from '../violin';
 import { Keyboard } from './keyboard';
 
 @Injectable({ providedIn: 'root' })
@@ -13,7 +13,9 @@ export class ViolinFocus extends InteractableFeature {
   public violinoGroup = new THREE.Group();
   public isPlayingViolin = false;
 
-  keyboard = inject(Keyboard)
+  keyboard = inject(Keyboard);
+  interactable = inject(InteractiveObjects);
+  violin = inject(Violin);
 
   private readonly Violin = 'Violino';
   private readonly Bow = 'Bow';
@@ -34,11 +36,9 @@ export class ViolinFocus extends InteractableFeature {
   private readonly violinDistance = 3.8;
   private readonly overlayDistance = 5.0;
 
-  interactable = inject(InteractiveObjects);
-  violinUi = inject(ViolinUi);
-
   private mainScene!: THREE.Scene;
   private arcoMesh?: THREE.Object3D;
+  private bowBasePosition?: THREE.Vector3; 
 
   matches(objectName: string): boolean {
     return objectName === 'ViolinGroup';
@@ -60,12 +60,16 @@ export class ViolinFocus extends InteractableFeature {
 
     scene.add(this.violinoGroup);
     this.interactable.addObject(this.violinoGroup);
+
+    this.violinoGroup.userData['originalPosition'] = this.violinoGroup.position.clone();
+    this.violinoGroup.userData['originalRotation'] = this.violinoGroup.rotation.clone();
+    this.violinoGroup.userData['originalScale'] = this.violinoGroup.scale.clone();
   }
 
   onClick(object: THREE.Object3D, cameraAnimations: CameraAnimations): void {
-    this.keyboard.ngOnDestroy()
+    this.keyboard.ngOnDestroy();
     cameraAnimations.state.set(CameraStates.TRANSITIONING);
-    this.interactable.dispose();
+    this.interactable.enabled = false;
 
     const box = new THREE.Box3().setFromObject(this.violinoGroup);
     const worldCenter = new THREE.Vector3();
@@ -73,7 +77,6 @@ export class ViolinFocus extends InteractableFeature {
 
     const pivotContainer = new THREE.Group();
     pivotContainer.name = 'Pivot_ViolinGroup';
-
     this.mainScene.add(pivotContainer);
     pivotContainer.position.copy(worldCenter);
 
@@ -85,10 +88,8 @@ export class ViolinFocus extends InteractableFeature {
     pivotContainer.attach(this.violinoGroup);
 
     const camera = (cameraAnimations as any).threeApp.camera;
-
     const cameraWorldQuaternion = new THREE.Quaternion();
     camera.getWorldQuaternion(cameraWorldQuaternion);
-
     const targetQuaternion = cameraWorldQuaternion.clone().multiply(this.violinDisplayOffset);
 
     const direction = new THREE.Vector3();
@@ -133,7 +134,7 @@ export class ViolinFocus extends InteractableFeature {
       onComplete: () => {
         cameraAnimations.state.set(CameraStates.FOCUSED);
         this.isPlayingViolin = true;
-        this.violinUi.show();
+        this.violin.show();
       },
     });
 
@@ -153,24 +154,97 @@ export class ViolinFocus extends InteractableFeature {
 
       const bowTargetQuaternion = this.arcoMesh.quaternion.clone().multiply(this.bowPlayingOffset);
       const bowLocalOffset = this.bowPlayingWorldOffset.clone().divideScalar(this.zoomScale);
-      const bowTargetPosition = this.arcoMesh.position.clone().add(bowLocalOffset);
+      
+      this.bowBasePosition = this.arcoMesh.position.clone().add(bowLocalOffset);
 
       this.slerpTo(this.arcoMesh, bowTargetQuaternion, 1.2);
-      this.lerpTo(this.arcoMesh, bowTargetPosition, 1.2);
+      this.lerpTo(this.arcoMesh, this.bowBasePosition, 1.2);
     }
+  }
+
+  public update(): void {
+    if (!this.isPlayingViolin || !this.arcoMesh || !this.bowBasePosition) return;
+
+    const physics = this.violin.bowPhysics();
+    this.arcoMesh.position.x = this.bowBasePosition.x + (physics.position * -0.5);
   }
 
   returnToIdle(cameraAnimations: CameraAnimations): void {
     this.isPlayingViolin = false;
-    this.violinUi.hide();
-    this.interactable.addObject(this.violinoGroup);
+    this.violin.hide();
+    
+    this.violin.bowPhysics.set({ velocity: 0, direction: 1, position: 0 });
+
+    cameraAnimations.state.set(CameraStates.TRANSITIONING);
 
     if (this.arcoMesh && this.arcoMesh.userData['restQuaternion']) {
       this.slerpTo(this.arcoMesh, this.arcoMesh.userData['restQuaternion'], 1.0);
       this.lerpTo(this.arcoMesh, this.arcoMesh.userData['restPosition'], 1.0);
     }
-    this.keyboard.restart()
-    cameraAnimations.returnToIdle();
+
+    const pivotContainer = this.violinoGroup.userData['pivotContainer'] as THREE.Group;
+    const webglOverlay = this.violinoGroup.userData['webglOverlay'] as THREE.Mesh;
+    const originalParent = this.violinoGroup.userData['originalParent'] as THREE.Object3D;
+
+    const initContainerPos = this.violinoGroup.userData['initContainerPos'] as THREE.Vector3;
+    const initContainerRot = this.violinoGroup.userData['initContainerRot'] as THREE.Quaternion;
+
+    const origPos = this.violinoGroup.userData['originalPosition'];
+    const origRot = this.violinoGroup.userData['originalRotation'];
+    const origScale = this.violinoGroup.userData['originalScale'];
+
+    if (webglOverlay) {
+      gsap.to(webglOverlay.material as THREE.Material, {
+        opacity: 0,
+        duration: 1.0,
+        ease: 'power2.inOut',
+        onComplete: () => {
+          this.mainScene.remove(webglOverlay);
+          webglOverlay.geometry.dispose();
+          (webglOverlay.material as THREE.Material).dispose();
+        },
+      });
+    }
+
+    if (pivotContainer && initContainerPos && initContainerRot) {
+      gsap.to(pivotContainer.position, {
+        x: initContainerPos.x,
+        y: initContainerPos.y,
+        z: initContainerPos.z,
+        duration: 1.0,
+        ease: 'power2.inOut',
+      });
+
+      gsap.to(pivotContainer.scale, {
+        x: 1,
+        y: 1,
+        z: 1,
+        duration: 1.0,
+        ease: 'power2.inOut',
+      });
+
+      this.slerpTo(pivotContainer, initContainerRot, 1.0);
+
+      gsap.delayedCall(1.0, () => {
+        if (originalParent) {
+          originalParent.attach(this.violinoGroup);
+        }
+
+        if (origPos) this.violinoGroup.position.copy(origPos);
+        if (origRot) this.violinoGroup.rotation.copy(origRot);
+        if (origScale) this.violinoGroup.scale.copy(origScale);
+
+        pivotContainer.parent?.remove(pivotContainer);
+
+        this.interactable.enabled = true;
+        cameraAnimations.state.set(CameraStates.IDLE);
+        this.keyboard.restart();
+      });
+    } else {
+      this.interactable.enabled = true;
+      cameraAnimations.state.set(CameraStates.IDLE);
+      this.keyboard.restart();
+    }
   }
 
   private slerpTo(object: THREE.Object3D, target: THREE.Quaternion, duration: number): void {

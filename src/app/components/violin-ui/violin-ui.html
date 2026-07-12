@@ -1,5 +1,90 @@
-@if (violinUi.isVisible()) {
+@if (violin.isVisible()) {
   <div class="violin-play-ui">
-    <p>teste violin</p>
+    <div class="action-bar">
+      <div class="action-buttons">
+        <button
+          (click)="violin.startRecording()"
+          [disabled]="violin.isRecording()"
+          class="act-btn red-btn"
+          [title]="'violinUi.recording.record' | translate"
+        >
+          <span class="dot" [class.recording-pulse]="violin.isRecording()"></span>
+        </button>
+
+        <button
+          (click)="violin.stopRecording()"
+          [disabled]="!violin.isRecording()"
+          class="act-btn other-btn"
+          [title]="'violinUi.recording.stop' | translate"
+        >
+          <ng-icon name="heroStop"></ng-icon>
+        </button>
+
+        <button
+          (click)="violin.downloadRecording()"
+          [disabled]="!violin.recordFinished()"
+          class="act-btn other-btn"
+          [title]="'violinUi.recording.download' | translate"
+        >
+          <ng-icon name="heroDocumentArrowDown"></ng-icon>
+        </button>
+      </div>
+
+      <div class="divider"></div>
+
+      <button
+        class="act-btn red-btn"
+        (click)="violinFocus.returnToIdle(cameraAnim)"
+        [title]="'violinUi.recording.close' | translate"
+      >
+        <ng-icon name="heroXMark"></ng-icon>
+      </button>
+    </div>
+
+    <div class="side-panel">
+      <div class="panel-title">{{ 'violinUi.manual.title' | translate }}</div>
+
+      <div class="instruction-item">
+        <div class="inst-key">{{ 'violinUi.manual.keys.label' | translate }}</div>
+        <div class="inst-desc">{{ 'violinUi.manual.keys.desc' | translate }}</div>
+      </div>
+
+      <div class="instruction-item">
+        <div class="inst-key">{{ 'violinUi.manual.bow.label' | translate }}</div>
+        <div class="inst-desc">{{ 'violinUi.manual.bow.desc' | translate }}</div>
+      </div>
+
+      <div class="instruction-item">
+        <div class="inst-key">{{ 'violinUi.manual.position.label' | translate }}</div>
+        <div class="inst-desc">{{ 'violinUi.manual.position.desc' | translate }}</div>
+      </div>
+
+      <div class="instruction-item">
+        <div class="inst-key">{{ 'violinUi.manual.pressure.label' | translate }}</div>
+        <div class="inst-desc">{{ 'violinUi.manual.pressure.desc' | translate }}</div>
+      </div>
+
+      <div class="instruction-item">
+        <div class="inst-key">{{ 'violinUi.manual.glissando.label' | translate }}</div>
+        <div class="inst-desc">{{ 'violinUi.manual.glissando.desc' | translate }}</div>
+      </div>
+    </div>
+
+    <div class="hud-bar">
+      <div class="string-indicators">
+        <div class="string-key" [class.active]="violin.activeKey() === '1'">
+          <span>1</span> {{ 'violinUi.strings.g' | translate }}
+        </div>
+        <div class="string-key" [class.active]="violin.activeKey() === '2'">
+          <span>2</span> {{ 'violinUi.strings.d' | translate }}
+        </div>
+        <div class="string-key" [class.active]="violin.activeKey() === '3'">
+          <span>3</span> {{ 'violinUi.strings.a' | translate }}
+        </div>
+        <div class="string-key" [class.active]="violin.activeKey() === '4'">
+          <span>4</span> {{ 'violinUi.strings.e' | translate }}
+        </div>
+      </div>
+    </div>
   </div>
 }
