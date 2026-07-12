@@ -1,11 +1,10 @@
-import { HarmonicGenerator, Envelope, Vibrato } from './violin-nodes';
+import { HarmonicGenerator, Envelope } from './violin-nodes';
 
 export class ViolinVoice {
   public output: GainNode;
   private bowGain: GainNode;
   private harmonics: HarmonicGenerator;
   private env: Envelope;
-  private vibrato: Vibrato;
   public baseFreq: number;
 
   constructor(
@@ -13,19 +12,12 @@ export class ViolinVoice {
     freq: number,
   ) {
     this.baseFreq = freq;
-
     this.output = this.ctx.createGain();
     this.output.gain.value = 0;
-
     this.bowGain = this.ctx.createGain();
     this.bowGain.gain.value = 0;
-
     this.harmonics = new HarmonicGenerator(ctx, freq);
     this.env = new Envelope(ctx, this.output.gain);
-
-    const fundamentalOsc = (this.harmonics as any).oscillators[0];
-    this.vibrato = new Vibrato(ctx, fundamentalOsc.frequency, freq);
-
     this.harmonics.output.connect(this.bowGain);
     this.bowGain.connect(this.output);
   }
@@ -43,33 +35,42 @@ export class ViolinVoice {
 
   public updateExpression(
     speed: number,
-    pressure: number,
+    _pressure: number,
     positionX: number,
     shiftKey: boolean,
     mouseDx: number,
   ) {
     const t = this.ctx.currentTime;
-
-    const finalSpeed = speed < 0.01 ? 0 : speed;
-
-    this.bowGain.gain.setTargetAtTime(finalSpeed, t, 0.05);
-
+    const finalSpeed = this.normalizeSpeed(speed);
+    this.applyBowGain(finalSpeed, t);
     this.harmonics.updateBrightness(finalSpeed, t);
+    this.applyPitchShift(shiftKey, mouseDx, t);
+    this.applyVibratoFromPosition(positionX, t);
+  }
 
-    if (shiftKey && mouseDx !== 0) {
-      this.baseFreq *= 1 + mouseDx * 0.001;
-      this.harmonics.setFrequency(this.baseFreq, t);
-    }
+  private normalizeSpeed(speed: number): number {
+    return speed < 0.01 ? 0 : speed;
+  }
 
+  private applyBowGain(speed: number, time: number) {
+    this.bowGain.gain.setTargetAtTime(speed, time, 0.05);
+  }
+
+  private applyPitchShift(shiftKey: boolean, mouseDx: number, time: number) {
+    if (!shiftKey || mouseDx === 0) return;
+    this.baseFreq *= 1 + mouseDx * 0.001;
+    this.harmonics.setFrequency(this.baseFreq, time);
+  }
+
+  private applyVibratoFromPosition(positionX: number, time: number) {
     const normalizedPos = Math.max(0, Math.min(positionX / window.innerWidth, 1));
-    this.vibrato.setIntensity(normalizedPos * 5, t);
+    this.harmonics.applyVibrato(normalizedPos * 5, time);
   }
 }
 
 export class Recorder {
   private mediaRecorder!: MediaRecorder;
   private recordedChunks: Blob[] = [];
-
   constructor(
     private dest: MediaStreamAudioDestinationNode,
     private onStopCallback: () => void,
@@ -77,14 +78,17 @@ export class Recorder {
 
   public start() {
     this.recordedChunks = [];
-    this.mediaRecorder = new MediaRecorder(this.dest.stream);
+    this.mediaRecorder = this.createMediaRecorder();
+    this.mediaRecorder.start();
+  }
 
-    this.mediaRecorder.ondataavailable = (e) => {
+  private createMediaRecorder(): MediaRecorder {
+    const recorder = new MediaRecorder(this.dest.stream);
+    recorder.ondataavailable = (e) => {
       if (e.data.size > 0) this.recordedChunks.push(e.data);
     };
-
-    this.mediaRecorder.onstop = this.onStopCallback;
-    this.mediaRecorder.start();
+    recorder.onstop = this.onStopCallback;
+    return recorder;
   }
 
   public stop() {
@@ -95,15 +99,19 @@ export class Recorder {
 
   public download() {
     if (this.recordedChunks.length === 0) return;
+    this.triggerDownload(this.buildBlob());
+  }
 
-    const blob = new Blob(this.recordedChunks, { type: 'audio/webm' });
+  private buildBlob(): Blob {
+    return new Blob(this.recordedChunks, { type: 'audio/webm' });
+  }
+  
+  private triggerDownload(blob: Blob) {
     const url = URL.createObjectURL(blob);
-
     const a = document.createElement('a');
     a.href = url;
     a.download = 'violin-recording.webm';
     a.click();
-
     URL.revokeObjectURL(url);
   }
 }

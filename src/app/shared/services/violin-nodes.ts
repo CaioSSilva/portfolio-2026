@@ -1,7 +1,36 @@
+export class Vibrato {
+  private lfo: OscillatorNode;
+
+  private targets: { gain: GainNode; harmonicNumber: number }[] = [];
+
+  constructor(private ctx: AudioContext) {
+    this.lfo = this.ctx.createOscillator();
+    this.lfo.frequency.value = 5.5;
+    this.lfo.start();
+  }
+
+  public addTarget(targetFreqParam: AudioParam, harmonicNumber: number) {
+    const gain = this.ctx.createGain();
+    gain.gain.value = 0;
+    this.lfo.connect(gain);
+    gain.connect(targetFreqParam);
+    this.targets.push({ gain, harmonicNumber });
+  }
+
+  public setIntensity(fundamentalHzDeviation: number, time: number) {
+    const randomDrift = 5 + Math.random() * 2;
+    this.lfo.frequency.setTargetAtTime(randomDrift, time, 0.2);
+    this.targets.forEach(({ gain, harmonicNumber }) => {
+      gain.gain.setTargetAtTime(fundamentalHzDeviation * harmonicNumber, time, 0.1);
+    });
+  }
+}
+
 export class HarmonicGenerator {
   public output: GainNode;
   private oscillators: OscillatorNode[] = [];
   private gains: GainNode[] = [];
+  private vibrato: Vibrato;
   private readonly HARMONIC_VOLUMES = [1, 0.55, 0.35, 0.2, 0.12, 0.08];
 
   constructor(
@@ -10,25 +39,36 @@ export class HarmonicGenerator {
   ) {
     this.output = this.ctx.createGain();
     this.output.gain.value = 1;
+    this.vibrato = new Vibrato(ctx);
     this.initNodes();
   }
 
   private initNodes() {
-    this.HARMONIC_VOLUMES.forEach((vol, index) => {
-      const osc = this.ctx.createOscillator();
-      osc.type = index === 0 ? 'sawtooth' : 'sine';
-      osc.frequency.value = this.baseFreq * (index + 1);
+    this.HARMONIC_VOLUMES.forEach((volume, index) => this.createHarmonic(index, volume));
+  }
 
-      const gain = this.ctx.createGain();
-      gain.gain.value = vol;
+  private createHarmonic(index: number, volume: number) {
+    const osc = this.createOscillator(index);
+    const gain = this.createHarmonicGain(volume);
+    osc.connect(gain);
+    gain.connect(this.output);
+    this.vibrato.addTarget(osc.frequency, index + 1);
+    osc.start();
+    this.oscillators.push(osc);
+    this.gains.push(gain);
+  }
 
-      osc.connect(gain);
-      gain.connect(this.output);
-      osc.start();
+  private createOscillator(index: number): OscillatorNode {
+    const osc = this.ctx.createOscillator();
+    osc.type = index === 0 ? 'sawtooth' : 'sine';
+    osc.frequency.value = this.baseFreq * (index + 1);
+    return osc;
+  }
 
-      this.oscillators.push(osc);
-      this.gains.push(gain);
-    });
+  private createHarmonicGain(volume: number): GainNode {
+    const gain = this.ctx.createGain();
+    gain.gain.value = volume;
+    return gain;
   }
 
   public setFrequency(freq: number, time: number) {
@@ -43,6 +83,10 @@ export class HarmonicGenerator {
       this.gains[i].gain.setTargetAtTime(targetGain, time, 0.1);
     }
   }
+
+  public applyVibrato(intensity: number, time: number) {
+    this.vibrato.setIntensity(intensity, time);
+  }
 }
 
 export class Envelope {
@@ -50,7 +94,6 @@ export class Envelope {
     private ctx: AudioContext,
     private targetParam: AudioParam,
   ) {}
-
   public triggerAttack() {
     const t = this.ctx.currentTime;
     this.targetParam.cancelScheduledValues(t);
@@ -66,71 +109,52 @@ export class Envelope {
   }
 }
 
-export class Vibrato {
-  private lfo: OscillatorNode;
-  private gain: GainNode;
-
-  constructor(
-    private ctx: AudioContext,
-    targetFreqParam: AudioParam,
-    baseFreq: number,
-  ) {
-    this.lfo = this.ctx.createOscillator();
-    this.gain = this.ctx.createGain();
-
-    this.lfo.frequency.value = 5.5;
-
-    this.gain.gain.value = baseFreq * (8 / 1200);
-
-    this.lfo.connect(this.gain);
-    this.gain.connect(targetFreqParam);
-    this.lfo.start();
-  }
-
-  public setIntensity(intensity: number, time: number) {
-    const randomDrift = 5 + Math.random() * 2;
-    this.lfo.frequency.setTargetAtTime(randomDrift, time, 0.2);
-    this.gain.gain.setTargetAtTime(intensity, time, 0.1);
-  }
-}
-
 export class BowNoise {
   public output: GainNode;
-  private bufferSource!: AudioBufferSourceNode;
+  private bufferSource: AudioBufferSourceNode;
   private bandPass: BiquadFilterNode;
   private lowPass: BiquadFilterNode;
-
   constructor(private ctx: AudioContext) {
     this.output = this.ctx.createGain();
     this.output.gain.value = 0;
-
-    this.bandPass = this.ctx.createBiquadFilter();
-    this.bandPass.type = 'bandpass';
-    this.bandPass.frequency.value = 3000;
-
-    this.lowPass = this.ctx.createBiquadFilter();
-    this.lowPass.type = 'lowpass';
-    this.lowPass.frequency.value = 8000;
-
-    this.initWhiteNoise();
-
+    this.bandPass = this.createBandPass();
+    this.lowPass = this.createLowPass();
+    this.bufferSource = this.createNoiseSource();
     this.bufferSource.connect(this.bandPass);
     this.bandPass.connect(this.lowPass);
     this.lowPass.connect(this.output);
   }
 
-  private initWhiteNoise() {
+  private createBandPass(): BiquadFilterNode {
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 3000;
+    return filter;
+  }
+
+  private createLowPass(): BiquadFilterNode {
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 8000;
+    return filter;
+  }
+
+  private createNoiseBuffer(): AudioBuffer {
     const bufferSize = this.ctx.sampleRate * 2;
     const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
     const data = buffer.getChannelData(0);
     for (let i = 0; i < bufferSize; i++) {
       data[i] = Math.random() * 2 - 1;
     }
+    return buffer;
+  }
 
-    this.bufferSource = this.ctx.createBufferSource();
-    this.bufferSource.buffer = buffer;
-    this.bufferSource.loop = true;
-    this.bufferSource.start();
+  private createNoiseSource(): AudioBufferSourceNode {
+    const source = this.ctx.createBufferSource();
+    source.buffer = this.createNoiseBuffer();
+    source.loop = true;
+    source.start();
+    return source;
   }
 
   public updateIntensity(velocity: number, pressure: number, time: number) {
@@ -143,40 +167,50 @@ export class BowNoise {
 export class BodyResonator {
   public input: GainNode;
   public output: GainNode;
-
   constructor(private ctx: AudioContext) {
     this.input = this.ctx.createGain();
     this.output = this.ctx.createGain();
+    const chain = this.createFilterChain();
+    this.connectChain(chain);
+  }
+  private createFilterChain(): BiquadFilterNode[] {
+    return [
+      this.createLowpass(6000),
+      this.createPeaking(500, 5),
+      this.createPeaking(900, 3),
+      this.createPeaking(1800, 2),
+      this.createHighShelf(4000, -2),
+    ];
+  }
 
-    const lp = this.ctx.createBiquadFilter();
-    lp.type = 'lowpass';
-    lp.frequency.value = 6000;
+  private connectChain(chain: BiquadFilterNode[]) {
+    this.input.connect(chain[0]);
+    for (let i = 0; i < chain.length - 1; i++) {
+      chain[i].connect(chain[i + 1]);
+    }
+    chain[chain.length - 1].connect(this.output);
+  }
 
-    const p1 = this.ctx.createBiquadFilter();
-    p1.type = 'peaking';
-    p1.frequency.value = 500;
-    p1.gain.value = 5;
+  private createLowpass(frequency: number): BiquadFilterNode {
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = frequency;
+    return filter;
+  }
 
-    const p2 = this.ctx.createBiquadFilter();
-    p2.type = 'peaking';
-    p2.frequency.value = 900;
-    p2.gain.value = 3;
+  private createPeaking(frequency: number, gain: number): BiquadFilterNode {
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'peaking';
+    filter.frequency.value = frequency;
+    filter.gain.value = gain;
+    return filter;
+  }
 
-    const p3 = this.ctx.createBiquadFilter();
-    p3.type = 'peaking';
-    p3.frequency.value = 1800;
-    p3.gain.value = 2;
-
-    const hs = this.ctx.createBiquadFilter();
-    hs.type = 'highshelf';
-    hs.frequency.value = 4000;
-    hs.gain.value = -2;
-
-    this.input.connect(lp);
-    lp.connect(p1);
-    p1.connect(p2);
-    p2.connect(p3);
-    p3.connect(hs);
-    hs.connect(this.output);
+  private createHighShelf(frequency: number, gain: number): BiquadFilterNode {
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'highshelf';
+    filter.frequency.value = frequency;
+    filter.gain.value = gain;
+    return filter;
   }
 }

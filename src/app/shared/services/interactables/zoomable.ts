@@ -1,4 +1,4 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Service, signal } from '@angular/core';
 import * as THREE from 'three';
 import gsap from 'gsap';
 import { CameraAnimations } from '../camera-animations';
@@ -9,7 +9,7 @@ import { InteractableFeature } from '../../interfaces/interactable';
 import { SoundingSystem } from '../sounding-system';
 import { Keyboard } from './keyboard';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class Zoomable extends InteractableFeature {
   private interactiveService = inject(InteractiveObjects);
   private sound = inject(SoundingSystem);
