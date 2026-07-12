@@ -41,13 +41,15 @@ import { Xbox } from '../../shared/services/interactables/xbox';
 import { Light } from '../../shared/services/light';
 import { ThemeEnum } from '../../shared/interfaces/theme';
 import { Helper } from '../helper/helper';
+import { ViolinFocus } from '../../shared/services/interactables/violin-focus';
+import { ViolinUi } from "../violin-ui/violin-ui";
 
 @Component({
   selector: 'app-three',
   standalone: true,
   templateUrl: './three.html',
   styleUrls: ['./three.css'],
-  imports: [NgIcon, Loading, TranslatePipe, ZoomableOverlay, Helper],
+  imports: [NgIcon, Loading, TranslatePipe, ZoomableOverlay, Helper, ViolinUi],
   providers: [
     provideIcons({
       heroBolt,
@@ -76,6 +78,7 @@ export class Three implements AfterViewInit {
   private keyboardService = inject(Keyboard);
   private pc = inject(Pc);
   private xbox = inject(Xbox);
+  private violinFocus = inject(ViolinFocus);
   private monitorInteraction = inject(Monitor);
   private zoomableInteraction = inject(Zoomable);
   public light = inject(Light);
@@ -83,6 +86,7 @@ export class Three implements AfterViewInit {
   private interactions: InteractableFeature[] = [
     this.monitorInteraction,
     this.zoomableInteraction,
+    this.violinFocus,
     this.pc,
     this.xbox,
   ];

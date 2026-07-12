@@ -27,6 +27,10 @@ export class Keyboard implements OnDestroy {
     window.addEventListener('keyup', this.handleKeyUp);
   }
 
+  public restart(){
+    this.init(this.model!, this.pressDepth)
+  }
+
   private handleKeyDown(event: KeyboardEvent): void {
     if (event.repeat || this.pressedKeys.has(event.code)) return;
 

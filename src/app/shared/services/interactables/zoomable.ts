@@ -7,11 +7,13 @@ import { CameraStates } from '../../interfaces/camera';
 import { getModelMetadata, ModelMetadata, MODELS_MAPPER } from '../../utils/models.mapper';
 import { InteractableFeature } from '../../interfaces/interactable';
 import { SoundingSystem } from '../sounding-system';
+import { Keyboard } from './keyboard';
 
 @Injectable({ providedIn: 'root' })
 export class Zoomable extends InteractableFeature {
   private interactiveService = inject(InteractiveObjects);
   private sound = inject(SoundingSystem);
+  private keyboard = inject(Keyboard)
   private mainScene!: THREE.Scene;
 
   public activeObject = signal<THREE.Object3D | null>(null);
@@ -44,6 +46,7 @@ export class Zoomable extends InteractableFeature {
 
   zoom(object: THREE.Object3D, cameraAnimations: CameraAnimations) {
     this.interactiveService.enabled = false;
+    this.keyboard.ngOnDestroy()
     cameraAnimations.state.set(CameraStates.TRANSITIONING);
 
     this.activeObject.set(object);
@@ -190,6 +193,7 @@ export class Zoomable extends InteractableFeature {
           this.activeObject.set(null);
           this.activeMetadata.set(null);
           cameraAnimations.state.set(CameraStates.IDLE);
+          this.keyboard.restart()
           this.interactiveService.enabled = true;
         },
       });
