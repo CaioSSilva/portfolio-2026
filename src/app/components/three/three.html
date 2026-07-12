@@ -9,9 +9,13 @@
   >
     <div class="top-bar">
       <div class="tooltip-wrapper">
-        <button [disabled]="
-            !cameraAnimations.state() === cameraStates.FOCUSED
-          " (click)="light.toggleLight()" (mouseenter)="audio.playNavHoverTick()">
+        <button
+          [disabled]="
+            cameraAnimations.state() === cameraStates.FREE_ROAM ||
+            cameraAnimations.state() === cameraStates.TRANSITIONING"
+          (click)="light.toggleLight()"
+          (mouseenter)="audio.playNavHoverTick()"
+        >
           <ng-icon
             size="16"
             [name]="light.lightState() === lightStates.light ? 'heroBolt' : 'heroBoltSlash'"
