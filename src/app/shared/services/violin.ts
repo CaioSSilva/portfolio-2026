@@ -118,6 +118,10 @@ export class Violin {
     if (this.activeKey() !== key) return;
     this.voices.get(key)?.release();
     this.activeKey.set(null);
+
+    if (this.ctx && this.bowNoise) {
+      this.bowNoise.updateIntensity(0, 0, this.ctx.currentTime);
+    }
   }
 
   public updateBowIntensity(
@@ -149,6 +153,10 @@ export class Violin {
     const currentKey = this.activeKey();
     if (currentKey) this.releaseNote(currentKey);
     this.bowPhysics.update((p) => ({ ...p, velocity: 0 }));
+    
+    if (this.ctx && this.bowNoise) {
+      this.bowNoise.updateIntensity(0, 0, this.ctx.currentTime);
+    }
   }
 
   private handleKeyDown = (e: KeyboardEvent) => {
