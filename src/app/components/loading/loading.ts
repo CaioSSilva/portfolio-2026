@@ -132,5 +132,7 @@ export class Loading {
       .set(this.overlay().nativeElement, { display: 'none' });
 
     this.audio.playUIStart()
+
+    this.bootSequence.isComplete.set(true);
   }
 }

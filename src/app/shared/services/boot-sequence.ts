@@ -20,9 +20,12 @@ const INITIAL_TASKS: BootTask[] = [
 
 @Service()
 export class BootSequence {
+  readonly isComplete = signal(false);
+
   public tasks = signal<BootTask[]>(INITIAL_TASKS.map((t) => ({ ...t })));
 
   public start(id: string): void {
+    this.isComplete.set(false);
     this.tasks.update((tasks) =>
       tasks.map((t) => (t.id === id ? { ...t, status: 'running' } : t)),
     );

@@ -4,13 +4,15 @@ import { InteractableConfig } from '../interfaces/interactable';
 import { SoundingSystem } from './sounding-system';
 import { Light } from './light';
 import { ThemeEnum } from '../interfaces/theme';
+import { BootSequence } from './boot-sequence';
 
 @Service()
 export class InteractiveObjects {
   private sound = inject(SoundingSystem);
   private light = inject(Light);
+  private boot = inject(BootSequence);
 
-  public enabled: boolean = true;
+  public enabled: boolean = false;
   private isLightOn: boolean = true;
 
   private scene!: THREE.Scene;
@@ -34,6 +36,10 @@ export class InteractiveObjects {
       this.isLightOn = this.light.lightState() === ThemeEnum.light;
       if (!this.isLightOn) {
         this.clearHover();
+      }
+
+      if(this.boot.isComplete()) {
+        this.enabled = true;
       }
     });
   }
