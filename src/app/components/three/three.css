@@ -6,10 +6,6 @@
   background-color: #15151e;
 }
 
-.no-interaction {
-  pointer-events: none;
-}
-
 .css-container {
   position: absolute;
   top: 0;
