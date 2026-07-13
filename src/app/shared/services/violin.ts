@@ -27,6 +27,8 @@ export class Violin {
   isMouseDown = signal(false);
   shiftPressed = signal(false);
   altPressed = signal(false);
+  midiConnected = signal(false);
+  midiError = signal<string | null>(null);
   bowPhysics = signal({ velocity: 0, direction: 1, position: 0 });
   audio = inject(SoundingSystem);
 
@@ -85,7 +87,7 @@ export class Violin {
     });
 
     this.voices.get(key)?.play(pizzicato);
-    
+
     if (!pizzicato) {
       this.warmUpBowState();
     }
@@ -161,6 +163,7 @@ export class Violin {
     this.createSignalChain();
     this.createRecordingBranch();
     this.createVoices();
+    this.initMIDI();
   }
 
   private createSignalChain() {
@@ -173,10 +176,10 @@ export class Violin {
 
     this.bodyResonator.output.connect(this.compressor);
     this.bowNoise.output.connect(this.bodyResonator.input);
-    
+
     this.compressor.connect(this.reverb.input);
     this.reverb.output.connect(this.masterGain);
-    
+
     this.masterGain.connect(this.ctx.destination);
   }
 
@@ -207,6 +210,82 @@ export class Violin {
     });
   }
 
+  private initMIDI() {
+    if (navigator.requestMIDIAccess) {
+      navigator.requestMIDIAccess().then(
+        (midiAccess) => {
+          this.midiError.set(null);
+          
+          const attachInputs = () => {
+            if (midiAccess.inputs.size === 0) {
+              this.midiConnected.set(false);
+            }
+            
+            for (const input of midiAccess.inputs.values()) {
+              input.onmidimessage = (e: any) => this.handleMIDIMessage(e);
+            }
+          };
+          
+          attachInputs();
+          midiAccess.onstatechange = () => attachInputs();
+        },
+        () => this.midiError.set('violinUi.midiError.denied')
+      );
+    } else {
+      this.midiError.set('violinUi.midiError.unsupported');
+    }
+  }
+
+  private handleMIDIMessage(event: any) {
+    if (!this.isVisible() || !this.ctx) return;
+    const [status, note, velocity] = event.data;
+    const command = status >> 4;
+
+    if (command === 9 || command === 8) {
+      if (!this.midiConnected()) this.midiConnected.set(true);
+    }
+
+    if (command === 9 && velocity > 0) {
+      this.playMIDINote(note, velocity);
+    } else if (command === 8 || (command === 9 && velocity === 0)) {
+      this.releaseNote(`m${note}`);
+    }
+  }
+
+  private playMIDINote(note: number, velocity: number) {
+    const key = `m${note}`;
+    if (this.activeKeys().has(key)) return;
+
+    if (!this.voices.has(key)) {
+      const freq = 440 * Math.pow(2, (note - 69) / 12);
+      const voice = new ViolinVoice(this.ctx, freq);
+      voice.output.connect(this.bodyResonator.input);
+      this.voices.set(key, voice);
+    }
+
+    this.activeKeys.update((keys) => {
+      const nextKeys = new Set(keys);
+      nextKeys.add(key);
+      return nextKeys;
+    });
+
+    const voice = this.voices.get(key)!;
+    const pizzicato = this.altPressed();
+    voice.play(pizzicato);
+
+    if (!pizzicato) {
+      const speed = Math.max(0.15, (velocity / 127) * MAX_BOW_SPEED);
+      voice.updateExpression(
+        speed,
+        PRESSED_PRESSURE,
+        window.innerWidth / 2,
+        this.shiftPressed(),
+        0,
+      );
+      this.bowNoise.updateIntensity(speed, PRESSED_PRESSURE, this.ctx.currentTime);
+    }
+  }
+
   private warmUpBowState() {
     const { velocity } = this.bowPhysics();
     this.updateBowIntensity(velocity, this.shiftPressed());
@@ -222,7 +301,7 @@ export class Violin {
 
   private handleKeyDown = (e: KeyboardEvent) => {
     if (!this.isVisible() || e.repeat) return;
-    
+
     if (e.key === 'Shift') this.shiftPressed.set(true);
     if (e.key === 'Alt') {
       e.preventDefault();
@@ -243,7 +322,7 @@ export class Violin {
         this.activeKeys().forEach((key) => this.voices.get(key)?.resetPitch(time));
       }
     }
-    
+
     if (e.key === 'Alt') this.altPressed.set(false);
 
     const stringKey = this.CODE_TO_STRING[e.code];

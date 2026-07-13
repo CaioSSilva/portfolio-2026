@@ -73,6 +73,11 @@
         <div class="inst-key">{{ 'violinUi.manual.pizzicato.label' | translate }}</div>
         <div class="inst-desc">{{ 'violinUi.manual.pizzicato.desc' | translate }}</div>
       </div>
+
+      <div class="instruction-item">
+        <div class="inst-key">{{ 'violinUi.manual.midi.label' | translate }}</div>
+        <div class="inst-desc">{{ 'violinUi.manual.midi.desc' | translate }}</div>
+      </div>
     </div>
 
     <div class="hud-bar">
@@ -95,7 +100,44 @@
         <div class="string-key" [class.active]="violin.shiftPressed()">
           <span>Shift</span> {{ 'violinUi.strings.shift' | translate }}
         </div>
+        
+        @if (violin.midiConnected()) {
+          <div class="string-key active" style="color: #4ade80; border-color: #4ade80;">
+            <span>ON</span> MIDI
+          </div>
+        }
       </div>
+    </div>
+
+    @if (violin.midiError()) {
+      <div class="toast-error">
+        <ng-icon name="heroExclamationCircle"></ng-icon>
+        <span>{{ violin.midiError()! | translate }}</span>
+        <button class="close-toast" (click)="violin.midiError.set(null)">
+          <ng-icon name="heroXMark"></ng-icon>
+        </button>
+      </div>
+    }
+
+    <div class="midi-help-wrapper">
+      @if (showMidiHelp) {
+        <div class="midi-help-tooltip">
+          <div class="tooltip-header">
+            <ng-icon name="heroInformationCircle"></ng-icon>
+            <span>{{ 'violinUi.midiHelp.title' | translate }}</span>
+          </div>
+          <p>{{ 'violinUi.midiHelp.desc' | translate }}</p>
+          <p class="tooltip-sub">{{ 'violinUi.midiHelp.sub' | translate }}</p>
+        </div>
+      }
+      
+      <button 
+        class="act-btn other-btn help-btn" 
+        (click)="toggleMidiHelp()"
+        [class.active-help]="showMidiHelp"
+      >
+        <ng-icon name="heroQuestionMarkCircle"></ng-icon>
+      </button>
     </div>
   </div>
 }

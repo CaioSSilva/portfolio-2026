@@ -113,6 +113,10 @@
       "pizzicato": {
         "label": "Alt + 1 to 4",
         "desc": "Pluck the strings instead of bowing (Pizzicato)."
+      },
+      "midi": {
+        "label": "🎹 USB MIDI",
+        "desc": "Connect a keyboard to play polyphonically."
       }
     },
     "strings": {
@@ -122,6 +126,15 @@
       "e": "E String",
       "alt": "Pizzicato",
       "shift": "Glissando"
+    },
+    "midiHelp": {
+      "title": "MIDI Connection",
+      "desc": "Connect a USB musical keyboard to your computer to play the violin polyphonically.",
+      "sub": "Compatible browsers: Chrome, Edge, Opera (Safari does not support Web MIDI)."
+    },
+    "midiError": {
+      "denied": "MIDI access denied or not supported by the system.",
+      "unsupported": "Your browser does not support the Web MIDI API."
     }
   }
 }

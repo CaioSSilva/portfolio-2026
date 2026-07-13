@@ -113,6 +113,9 @@
       "pizzicato": {
         "label": "Alt + 1 a 4",
         "desc": "Belisque as cordas em vez de usar o arco (Pizzicato)."
+      },"midi": {
+        "label": "🎹 MIDI USB",
+        "desc": "Conecte um teclado para tocar polifonicamente."
       }
     },
     "strings": {
@@ -122,6 +125,15 @@
       "e": "Mi",
       "alt": "Pizzicato",
       "shift": "Glissando"
+    },
+    "midiHelp": {
+      "title": "Conexão MIDI",
+      "desc": "Conecte um teclado musical USB ao computador para tocar o violino polifonicamente.",
+      "sub": "Navegadores compatíveis: Chrome, Edge, Opera (O Safari não suporta Web MIDI)."
+    },
+    "midiError": {
+      "denied": "Acesso MIDI negado ou não suportado pelo sistema.",
+      "unsupported": "Seu navegador não suporta a Web MIDI API."
     }
   }
 }
