@@ -215,25 +215,29 @@ export class Violin {
       navigator.requestMIDIAccess().then(
         (midiAccess) => {
           this.midiError.set(null);
-          
+
           const attachInputs = () => {
             if (midiAccess.inputs.size === 0) {
               this.midiConnected.set(false);
             }
-            
+
             for (const input of midiAccess.inputs.values()) {
               input.onmidimessage = (e: any) => this.handleMIDIMessage(e);
             }
           };
-          
+
           attachInputs();
           midiAccess.onstatechange = () => attachInputs();
         },
-        () => this.midiError.set('violinUi.midiError.denied')
+        () => this.midiError.set('violinUi.midiError.denied'),
       );
     } else {
       this.midiError.set('violinUi.midiError.unsupported');
     }
+
+    setTimeout(() => {
+      this.midiError.set(null);
+    }, 8000);
   }
 
   private handleMIDIMessage(event: any) {
