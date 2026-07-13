@@ -68,6 +68,11 @@
         <div class="inst-key">{{ 'violinUi.manual.glissando.label' | translate }}</div>
         <div class="inst-desc">{{ 'violinUi.manual.glissando.desc' | translate }}</div>
       </div>
+
+      <div class="instruction-item">
+        <div class="inst-key">{{ 'violinUi.manual.pizzicato.label' | translate }}</div>
+        <div class="inst-desc">{{ 'violinUi.manual.pizzicato.desc' | translate }}</div>
+      </div>
     </div>
 
     <div class="hud-bar">
@@ -83,6 +88,12 @@
         </div>
         <div class="string-key" [class.active]="violin.activeKeys().has('4')">
           <span>4</span> {{ 'violinUi.strings.e' | translate }}
+        </div>
+        <div class="string-key" [class.active]="violin.altPressed()">
+          <span>Alt</span> {{ 'violinUi.strings.alt' | translate }}
+        </div>
+        <div class="string-key" [class.active]="violin.shiftPressed()">
+          <span>Shift</span> {{ 'violinUi.strings.shift' | translate }}
         </div>
       </div>
     </div>

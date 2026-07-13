@@ -118,6 +118,9 @@ export class Envelope {
   private static readonly ATTACK_SMOOTHING = 0.12;
   private static readonly RELEASE_SMOOTHING = 0.18;
   private static readonly QUICK_RELEASE_SMOOTHING = 0.035;
+  
+  private static readonly PIZZ_ATTACK = 0.005;
+  private static readonly PIZZ_DECAY = 2.0;
 
   constructor(
     private ctx: AudioContext,
@@ -137,6 +140,15 @@ export class Envelope {
     const timeConstant = fast ? Envelope.QUICK_RELEASE_SMOOTHING : Envelope.RELEASE_SMOOTHING;
     this.targetParam.cancelScheduledValues(t);
     this.targetParam.setTargetAtTime(0, t, timeConstant);
+  }
+
+  public triggerPizzicato() {
+    const t = this.ctx.currentTime;
+    this.targetParam.cancelScheduledValues(t);
+    this.targetParam.setValueAtTime(0, t);
+    this.targetParam.linearRampToValueAtTime(1, t + Envelope.PIZZ_ATTACK);
+    this.targetParam.exponentialRampToValueAtTime(0.001, t + Envelope.PIZZ_DECAY);
+    this.targetParam.setValueAtTime(0, t + Envelope.PIZZ_DECAY);
   }
 }
 
@@ -250,5 +262,52 @@ export class BodyResonator {
       chain[i].connect(chain[i + 1]);
     }
     chain[chain.length - 1].connect(this.output);
+  }
+}
+
+export class RoomReverb {
+  public input: GainNode;
+  public output: GainNode;
+  
+  private convolver: ConvolverNode;
+  private dryGain: GainNode;
+  private wetGain: GainNode;
+
+  constructor(private ctx: AudioContext) {
+    this.input = this.ctx.createGain();
+    this.output = this.ctx.createGain();
+    
+    this.convolver = this.ctx.createConvolver();
+    this.convolver.buffer = this.createSyntheticIR();
+
+    this.dryGain = this.ctx.createGain();
+    this.wetGain = this.ctx.createGain();
+
+    this.dryGain.gain.value = 0.7; 
+    this.wetGain.gain.value = 0.35;
+
+    this.input.connect(this.dryGain);
+    this.dryGain.connect(this.output);
+
+    this.input.connect(this.convolver);
+    this.convolver.connect(this.wetGain);
+    this.wetGain.connect(this.output);
+  }
+
+  private createSyntheticIR(): AudioBuffer {
+    const duration = 1.8;
+    const sampleRate = this.ctx.sampleRate;
+    const length = sampleRate * duration;
+    const buffer = this.ctx.createBuffer(2, length, sampleRate);
+
+    for (let c = 0; c < 2; c++) {
+      const data = buffer.getChannelData(c);
+      for (let i = 0; i < length; i++) {
+        const noise = Math.random() * 2 - 1;
+        const decay = Math.pow(1 - i / length, 3.5);
+        data[i] = noise * decay;
+      }
+    }
+    return buffer;
   }
 }

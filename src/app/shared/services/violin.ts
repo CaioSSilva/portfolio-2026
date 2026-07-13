@@ -1,7 +1,7 @@
 import { inject, signal, Service } from '@angular/core';
 import { SoundingSystem } from './sounding-system';
 import { Recorder, ViolinVoice } from './violin-controllers';
-import { BodyResonator, BowNoise } from './violin-nodes';
+import { BodyResonator, BowNoise, RoomReverb } from './violin-nodes';
 
 interface MouseMoveDelta {
   deltaY: number;
@@ -26,6 +26,7 @@ export class Violin {
   activeKeys = signal<Set<string>>(new Set());
   isMouseDown = signal(false);
   shiftPressed = signal(false);
+  altPressed = signal(false);
   bowPhysics = signal({ velocity: 0, direction: 1, position: 0 });
   audio = inject(SoundingSystem);
 
@@ -37,6 +38,7 @@ export class Violin {
   private voices: Map<string, ViolinVoice> = new Map();
   private bowNoise!: BowNoise;
   private bodyResonator!: BodyResonator;
+  private reverb!: RoomReverb;
 
   private readonly STRINGS: Record<string, number> = {
     '1': 196.0,
@@ -73,7 +75,7 @@ export class Violin {
     this.stopRecording();
   }
 
-  public pressNote(key: string) {
+  public pressNote(key: string, pizzicato = false) {
     if (!this.STRINGS[key] || this.activeKeys().has(key)) return;
 
     this.activeKeys.update((keys) => {
@@ -82,8 +84,11 @@ export class Violin {
       return nextKeys;
     });
 
-    this.voices.get(key)?.play();
-    this.warmUpBowState();
+    this.voices.get(key)?.play(pizzicato);
+    
+    if (!pizzicato) {
+      this.warmUpBowState();
+    }
   }
 
   public releaseNote(key: string, fast = false) {
@@ -112,11 +117,21 @@ export class Violin {
     const pressure = this.computePressure();
     const posX = positionX ?? this.lastMouseX ?? window.innerWidth / 2;
 
+    let anyBowed = false;
+
     keys.forEach((key) => {
-      this.voices.get(key)?.updateExpression(speed, pressure, posX, shiftKey, mouseDx);
+      const voice = this.voices.get(key);
+      if (voice) {
+        voice.updateExpression(speed, pressure, posX, shiftKey, mouseDx);
+        if (!voice.isPizzicato) anyBowed = true;
+      }
     });
 
-    this.bowNoise.updateIntensity(speed, pressure, this.ctx.currentTime);
+    if (anyBowed) {
+      this.bowNoise.updateIntensity(speed, pressure, this.ctx.currentTime);
+    } else {
+      this.bowNoise.updateIntensity(0, 0, this.ctx.currentTime);
+    }
   }
 
   public stopNote() {
@@ -154,10 +169,14 @@ export class Violin {
     this.compressor = this.createCompressor();
     this.bodyResonator = new BodyResonator(this.ctx);
     this.bowNoise = new BowNoise(this.ctx);
+    this.reverb = new RoomReverb(this.ctx);
 
     this.bodyResonator.output.connect(this.compressor);
     this.bowNoise.output.connect(this.bodyResonator.input);
-    this.compressor.connect(this.masterGain);
+    
+    this.compressor.connect(this.reverb.input);
+    this.reverb.output.connect(this.masterGain);
+    
     this.masterGain.connect(this.ctx.destination);
   }
 
@@ -203,10 +222,15 @@ export class Violin {
 
   private handleKeyDown = (e: KeyboardEvent) => {
     if (!this.isVisible() || e.repeat) return;
+    
     if (e.key === 'Shift') this.shiftPressed.set(true);
+    if (e.key === 'Alt') {
+      e.preventDefault();
+      this.altPressed.set(true);
+    }
 
     const stringKey = this.CODE_TO_STRING[e.code];
-    if (stringKey) this.pressNote(stringKey);
+    if (stringKey) this.pressNote(stringKey, this.altPressed());
   };
 
   private handleKeyUp = (e: KeyboardEvent) => {
@@ -219,6 +243,8 @@ export class Violin {
         this.activeKeys().forEach((key) => this.voices.get(key)?.resetPitch(time));
       }
     }
+    
+    if (e.key === 'Alt') this.altPressed.set(false);
 
     const stringKey = this.CODE_TO_STRING[e.code];
     if (stringKey) this.releaseNote(stringKey);
@@ -295,6 +321,7 @@ export class Violin {
     this.lastMouseY = null;
     this.lastMouseX = null;
     this.shiftPressed.set(false);
+    this.altPressed.set(false);
     this.isMouseDown.set(false);
     this.listeners.forEach(([type, handler]) => document.addEventListener(type, handler));
   }

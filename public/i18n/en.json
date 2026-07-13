@@ -109,13 +109,19 @@
       "glissando": {
         "label": "⇧ Shift + Mouse X ↔",
         "desc": "Slide finger along the fingerboard (Glissando)."
+      },
+      "pizzicato": {
+        "label": "Alt + 1 to 4",
+        "desc": "Pluck the strings instead of bowing (Pizzicato)."
       }
     },
     "strings": {
       "g": "G String",
       "d": "D String",
       "a": "A String",
-      "e": "E String"
+      "e": "E String",
+      "alt": "Pizzicato",
+      "shift": "Glissando"
     }
   }
 }

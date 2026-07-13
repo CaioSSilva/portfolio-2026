@@ -14,6 +14,7 @@ export class ViolinVoice {
 
   public output: GainNode;
   public baseFreq: number;
+  public isPizzicato = false;
 
   private bowGain: GainNode;
   private harmonics: HarmonicGenerator;
@@ -36,10 +37,20 @@ export class ViolinVoice {
     this.bowGain.connect(this.output);
   }
 
-  public play() {
-    this.env.triggerAttack();
-    this.bowGain.gain.cancelScheduledValues(this.ctx.currentTime);
-    this.bowGain.gain.setValueAtTime(0, this.ctx.currentTime);
+  public play(pizzicato = false) {
+    this.isPizzicato = pizzicato;
+    const t = this.ctx.currentTime;
+
+    if (pizzicato) {
+      this.env.triggerPizzicato();
+      this.bowGain.gain.cancelScheduledValues(t);
+      this.bowGain.gain.setValueAtTime(1.0, t);
+      this.harmonics.updateBrightness(1.5, t);
+    } else {
+      this.env.triggerAttack();
+      this.bowGain.gain.cancelScheduledValues(t);
+      this.bowGain.gain.setValueAtTime(0, t);
+    }
   }
 
   public release(fast = false) {
@@ -56,12 +67,16 @@ export class ViolinVoice {
     mouseDx: number,
   ) {
     const t = this.ctx.currentTime;
+    
+    this.applyPitchShift(shiftKey, mouseDx, t);
+    this.applyVibratoFromPosition(positionX, speed, t);
+
+    if (this.isPizzicato) return;
+
     const finalSpeed = this.normalizeSpeed(speed);
     const pressureFactor = this.normalizePressure(pressure);
     this.applyBowGain(finalSpeed, pressureFactor, t);
     this.harmonics.updateBrightness(finalSpeed * pressureFactor, t);
-    this.applyPitchShift(shiftKey, mouseDx, t);
-    this.applyVibratoFromPosition(positionX, finalSpeed, t);
   }
 
   public resetPitch(time: number) {
