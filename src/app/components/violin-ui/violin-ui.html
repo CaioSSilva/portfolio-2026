@@ -72,16 +72,16 @@
 
     <div class="hud-bar">
       <div class="string-indicators">
-        <div class="string-key" [class.active]="violin.activeKey() === '1'">
+        <div class="string-key" [class.active]="violin.activeKeys().has('1')">
           <span>1</span> {{ 'violinUi.strings.g' | translate }}
         </div>
-        <div class="string-key" [class.active]="violin.activeKey() === '2'">
+        <div class="string-key" [class.active]="violin.activeKeys().has('2')">
           <span>2</span> {{ 'violinUi.strings.d' | translate }}
         </div>
-        <div class="string-key" [class.active]="violin.activeKey() === '3'">
+        <div class="string-key" [class.active]="violin.activeKeys().has('3')">
           <span>3</span> {{ 'violinUi.strings.a' | translate }}
         </div>
-        <div class="string-key" [class.active]="violin.activeKey() === '4'">
+        <div class="string-key" [class.active]="violin.activeKeys().has('4')">
           <span>4</span> {{ 'violinUi.strings.e' | translate }}
         </div>
       </div>

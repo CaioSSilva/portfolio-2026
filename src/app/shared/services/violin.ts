@@ -12,6 +12,10 @@ interface MouseMoveDelta {
 const MOUSE_STOP_DELAY_MS = 50;
 const MAX_BOW_TRAVEL = 1.5;
 const BOW_POSITION_SENSITIVITY = 0.005;
+const BOW_VELOCITY_SCALE = 50;
+const MAX_BOW_SPEED = 1.0;
+const PRESSED_PRESSURE = 1.5;
+const RELEASED_PRESSURE = 0.5;
 
 @Service()
 export class Violin {
@@ -19,7 +23,7 @@ export class Violin {
   isRecording = signal(false);
   isPaused = signal(false);
   recordFinished = signal(false);
-  activeKey = signal<string | null>(null);
+  activeKeys = signal<Set<string>>(new Set());
   isMouseDown = signal(false);
   shiftPressed = signal(false);
   bowPhysics = signal({ velocity: 0, direction: 1, position: 0 });
@@ -39,6 +43,13 @@ export class Violin {
     '2': 293.66,
     '3': 440.0,
     '4': 659.25,
+  };
+
+  private readonly CODE_TO_STRING: Record<string, string> = {
+    Digit1: '1',
+    Digit2: '2',
+    Digit3: '3',
+    Digit4: '4',
   };
 
   private mouseStopTimeout: any;
@@ -62,6 +73,73 @@ export class Violin {
     this.stopRecording();
   }
 
+  public pressNote(key: string) {
+    if (!this.STRINGS[key] || this.activeKeys().has(key)) return;
+
+    this.activeKeys.update((keys) => {
+      const nextKeys = new Set(keys);
+      nextKeys.add(key);
+      return nextKeys;
+    });
+
+    this.voices.get(key)?.play();
+    this.warmUpBowState();
+  }
+
+  public releaseNote(key: string, fast = false) {
+    if (!this.activeKeys().has(key)) return;
+
+    const voice = this.voices.get(key);
+    voice?.release(fast);
+    if (this.ctx) voice?.resetPitch(this.ctx.currentTime);
+
+    this.activeKeys.update((keys) => {
+      const nextKeys = new Set(keys);
+      nextKeys.delete(key);
+      return nextKeys;
+    });
+
+    if (this.activeKeys().size === 0 && this.ctx && this.bowNoise) {
+      this.bowNoise.updateIntensity(0, 0, this.ctx.currentTime);
+    }
+  }
+
+  public updateBowIntensity(velocityY: number, shiftKey = false, positionX?: number, mouseDx = 0) {
+    const keys = this.activeKeys();
+    if (keys.size === 0 || !this.ctx) return;
+
+    const speed = this.computeSpeed(velocityY);
+    const pressure = this.computePressure();
+    const posX = positionX ?? this.lastMouseX ?? window.innerWidth / 2;
+
+    keys.forEach((key) => {
+      this.voices.get(key)?.updateExpression(speed, pressure, posX, shiftKey, mouseDx);
+    });
+
+    this.bowNoise.updateIntensity(speed, pressure, this.ctx.currentTime);
+  }
+
+  public stopNote() {
+    const keys = this.activeKeys();
+    keys.forEach((key) => this.releaseNote(key));
+    this.bowPhysics.update((p) => ({ ...p, velocity: 0 }));
+  }
+
+  public startRecording() {
+    if (!this.ctx) this.initAudio();
+    this.isRecording.set(true);
+    this.recordFinished.set(false);
+    this.recorder.start();
+  }
+
+  public stopRecording() {
+    if (this.isRecording()) this.recorder.stop();
+  }
+
+  public downloadRecording() {
+    this.recorder.download();
+  }
+
   private initAudio() {
     if (this.ctx) return;
     this.ctx = new AudioContext();
@@ -76,6 +154,7 @@ export class Violin {
     this.compressor = this.createCompressor();
     this.bodyResonator = new BodyResonator(this.ctx);
     this.bowNoise = new BowNoise(this.ctx);
+
     this.bodyResonator.output.connect(this.compressor);
     this.bowNoise.output.connect(this.bodyResonator.input);
     this.compressor.connect(this.masterGain);
@@ -109,79 +188,66 @@ export class Violin {
     });
   }
 
-  public pressNote(key: string) {
-    if (!this.STRINGS[key] || this.activeKey() === key) return;
-    if (this.activeKey()) this.releaseNote(this.activeKey()!);
-    this.activeKey.set(key);
-    this.voices.get(key)?.play();
-  }
-
-  public releaseNote(key: string) {
-    if (this.activeKey() !== key) return;
-    this.voices.get(key)?.release();
-    this.activeKey.set(null);
-
-    if (this.ctx && this.bowNoise) {
-      this.bowNoise.updateIntensity(0, 0, this.ctx.currentTime);
-    }
-  }
-
-  public updateBowIntensity(velocityY: number, shiftKey = false, positionX?: number, mouseDx = 0) {
-    const currentKey = this.activeKey();
-    if (!currentKey || !this.ctx) return;
-    const voice = this.voices.get(currentKey);
-    if (!voice) return;
-    const speed = this.computeSpeed(velocityY);
-    const pressure = this.computePressure();
-    const posX = positionX ?? this.lastMouseX ?? window.innerWidth / 2;
-    voice.updateExpression(speed, pressure, posX, shiftKey, mouseDx);
-    this.bowNoise.updateIntensity(speed, pressure, this.ctx.currentTime);
+  private warmUpBowState() {
+    const { velocity } = this.bowPhysics();
+    this.updateBowIntensity(velocity, this.shiftPressed());
   }
 
   private computeSpeed(velocityY: number): number {
-    return velocityY === 0 ? 0 : Math.min(Math.abs(velocityY) / 50, 1.0);
+    return Math.min(Math.abs(velocityY) / BOW_VELOCITY_SCALE, MAX_BOW_SPEED);
   }
 
   private computePressure(): number {
-    return this.isMouseDown() ? 1.5 : 0.5;
-  }
-
-  public stopNote() {
-    const currentKey = this.activeKey();
-    if (currentKey) this.releaseNote(currentKey);
-    this.bowPhysics.update((p) => ({ ...p, velocity: 0 }));
-
-    if (this.ctx && this.bowNoise) {
-      this.bowNoise.updateIntensity(0, 0, this.ctx.currentTime);
-    }
+    return this.isMouseDown() ? PRESSED_PRESSURE : RELEASED_PRESSURE;
   }
 
   private handleKeyDown = (e: KeyboardEvent) => {
     if (!this.isVisible() || e.repeat) return;
     if (e.key === 'Shift') this.shiftPressed.set(true);
-    if (this.STRINGS[e.key]) this.pressNote(e.key);
+
+    const stringKey = this.CODE_TO_STRING[e.code];
+    if (stringKey) this.pressNote(stringKey);
   };
 
   private handleKeyUp = (e: KeyboardEvent) => {
     if (!this.isVisible()) return;
-    if (e.key === 'Shift') this.shiftPressed.set(false);
-    if (this.STRINGS[e.key]) this.releaseNote(e.key);
+
+    if (e.key === 'Shift') {
+      this.shiftPressed.set(false);
+      if (this.ctx) {
+        const time = this.ctx.currentTime;
+        this.activeKeys().forEach((key) => this.voices.get(key)?.resetPitch(time));
+      }
+    }
+
+    const stringKey = this.CODE_TO_STRING[e.code];
+    if (stringKey) this.releaseNote(stringKey);
   };
 
   private handleMouseDown = () => this.isMouseDown.set(true);
   private handleMouseUp = () => this.isMouseDown.set(false);
 
   private handleMouseMove = (e: MouseEvent) => {
-    if (!this.isVisible() || !this.activeKey()) return;
+    if (!this.isVisible() || this.activeKeys().size === 0) return;
+
     if (this.lastMouseX === null || this.lastMouseY === null) {
       this.recordMousePosition(e);
       return;
     }
+
     const delta = this.computeMouseDelta(e);
     this.applyBowMotion(delta);
     this.recordMousePosition(e);
     this.scheduleMouseStop();
   };
+
+  private readonly listeners: [string, EventListener][] = [
+    ['keydown', this.handleKeyDown as EventListener],
+    ['keyup', this.handleKeyUp as EventListener],
+    ['mousemove', this.handleMouseMove as EventListener],
+    ['mousedown', this.handleMouseDown as EventListener],
+    ['mouseup', this.handleMouseUp as EventListener],
+  ];
 
   private computeMouseDelta(e: MouseEvent): MouseMoveDelta {
     return {
@@ -195,7 +261,9 @@ export class Violin {
     const velocity = Math.abs(delta.deltaY);
     const direction = delta.deltaY > 0 ? 1 : -1;
     const newPosition = this.computeBowPosition(velocity, direction);
+
     this.bowPhysics.set({ velocity, direction, position: newPosition });
+
     const shiftKey = this.shiftPressed();
     this.updateBowIntensity(velocity, shiftKey, delta.clientX, shiftKey ? delta.deltaX : 0);
   }
@@ -223,41 +291,16 @@ export class Violin {
     this.lastMouseX = null;
   }
 
-  private eventPairs(): [string, EventListener][] {
-    return [
-      ['keydown', this.handleKeyDown as EventListener],
-      ['keyup', this.handleKeyUp as EventListener],
-      ['mousemove', this.handleMouseMove as EventListener],
-      ['mousedown', this.handleMouseDown as EventListener],
-      ['mouseup', this.handleMouseUp as EventListener],
-    ];
-  }
-
   private attachListeners() {
     this.lastMouseY = null;
     this.lastMouseX = null;
     this.shiftPressed.set(false);
     this.isMouseDown.set(false);
-    this.eventPairs().forEach(([type, handler]) => document.addEventListener(type, handler));
+    this.listeners.forEach(([type, handler]) => document.addEventListener(type, handler));
   }
 
   private removeListeners() {
     clearTimeout(this.mouseStopTimeout);
-    this.eventPairs().forEach(([type, handler]) => document.removeEventListener(type, handler));
-  }
-
-  public startRecording() {
-    if (!this.ctx) this.initAudio();
-    this.isRecording.set(true);
-    this.recordFinished.set(false);
-    this.recorder.start();
-  }
-
-  public stopRecording() {
-    if (this.isRecording()) this.recorder.stop();
-  }
-
-  public downloadRecording() {
-    this.recorder.download();
+    this.listeners.forEach(([type, handler]) => document.removeEventListener(type, handler));
   }
 }

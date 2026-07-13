@@ -223,14 +223,18 @@ export class ViolinFocus extends InteractableFeature {
     if (!this.isPlayingViolin || !this.arcoMesh || !this.bowBasePosition) return;
 
     const physics = this.violin.bowPhysics();
-
-    const movementDelta = THREE.MathUtils.clamp(
-      physics.position * -0.5,
+    
+    const LOGICAL_BOW_LIMIT = 1.5; 
+    
+    const mappedZ = THREE.MathUtils.mapLinear(
+      physics.position,
+      -LOGICAL_BOW_LIMIT,
+      LOGICAL_BOW_LIMIT,
       this.bowLimitMin,
-      this.bowLimitMax,
+      this.bowLimitMax 
     );
 
-    this.arcoMesh.position.z = this.bowBasePosition.z + movementDelta;
+    this.arcoMesh.position.z = this.bowBasePosition.z + mappedZ;
   }
 
   returnToIdle(cameraAnimations: CameraAnimations): void {
