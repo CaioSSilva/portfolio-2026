@@ -23,7 +23,9 @@ interface PivotReturnData {
 export class ViolinFocus extends InteractableFeature {
   public violinoGroup = new THREE.Group();
   public isPlayingViolin = false;
+
   keyboard = inject(Keyboard);
+  camera = inject(CameraAnimations);
   interactable = inject(InteractiveObjects);
   violin = inject(Violin);
 
@@ -39,7 +41,7 @@ export class ViolinFocus extends InteractableFeature {
   );
 
   private readonly bowPlayingLocalOffset = new THREE.Vector3(0.45, -0.3, 0);
-  private readonly bowLimitMin = -0.0525; 
+  private readonly bowLimitMin = -0.0525;
   private readonly bowLimitMax = -0.0238;
 
   private readonly zoomScale = 4.3;
@@ -82,17 +84,26 @@ export class ViolinFocus extends InteractableFeature {
   }
 
   onClick(_object: THREE.Object3D, cameraAnimations: CameraAnimations): void {
+    if (cameraAnimations.state() === CameraStates.FREE_ROAM) {
+      cameraAnimations.resetFromFreeRoam(() => this.clickCallback(cameraAnimations));
+    } else {
+      this.clickCallback(cameraAnimations);
+    }
+  }
+
+  clickCallback(cameraAnimations: CameraAnimations): void {
     this.beginFocusTransition(cameraAnimations);
+
     const pivotContainer = this.createPivotContainer();
     const camera = this.getCamera(cameraAnimations);
     const direction = this.getCameraDirection(camera);
     const targetQuaternion = this.computeTargetQuaternion(camera);
     const targetWorldPosition = this.computeTargetWorldPosition(camera, direction);
     const webglOverlay = this.createOverlayPlane(camera, direction);
-    
+
     this.mainScene.updateMatrixWorld();
     this.mainScene.worldToLocal(targetWorldPosition);
-    
+
     this.animateOverlayIn(webglOverlay);
     this.animatePivotIntoFocus(
       pivotContainer,
@@ -157,13 +168,13 @@ export class ViolinFocus extends InteractableFeature {
       depthWrite: false,
     });
     const webglOverlay = new THREE.Mesh(overlayGeo, overlayMat);
-    
+
     const overlayTarget = camera.position
       .clone()
       .add(direction.clone().multiplyScalar(this.overlayDistance));
     webglOverlay.position.copy(overlayTarget);
     webglOverlay.lookAt(camera.position);
-    
+
     this.mainScene.add(webglOverlay);
     this.violinoGroup.userData['webglOverlay'] = webglOverlay;
     return webglOverlay;
@@ -209,12 +220,12 @@ export class ViolinFocus extends InteractableFeature {
     if (!this.arcoMesh) return;
     this.arcoMesh.userData['restQuaternion'] = this.arcoMesh.quaternion.clone();
     this.arcoMesh.userData['restPosition'] = this.arcoMesh.position.clone();
-    
+
     const bowTargetQuaternion = this.arcoMesh.quaternion.clone().multiply(this.bowPlayingOffset);
     const bowLocalOffset = this.bowPlayingLocalOffset.clone().divideScalar(this.zoomScale);
-    
+
     this.bowBasePosition = this.arcoMesh.position.clone().add(bowLocalOffset);
-    
+
     this.slerpTo(this.arcoMesh, bowTargetQuaternion, this.focusAnimationDuration);
     this.lerpTo(this.arcoMesh, this.bowBasePosition, this.focusAnimationDuration);
   }
@@ -223,15 +234,15 @@ export class ViolinFocus extends InteractableFeature {
     if (!this.isPlayingViolin || !this.arcoMesh || !this.bowBasePosition) return;
 
     const physics = this.violin.bowPhysics();
-    
-    const LOGICAL_BOW_LIMIT = 1.5; 
-    
+
+    const LOGICAL_BOW_LIMIT = 1.5;
+
     const mappedZ = THREE.MathUtils.mapLinear(
       physics.position,
       -LOGICAL_BOW_LIMIT,
       LOGICAL_BOW_LIMIT,
       this.bowLimitMin,
-      this.bowLimitMax 
+      this.bowLimitMax,
     );
 
     this.arcoMesh.position.z = this.bowBasePosition.z + mappedZ;
